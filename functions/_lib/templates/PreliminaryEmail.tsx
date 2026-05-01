@@ -80,6 +80,53 @@ export default function PreliminaryEmail({
             color: palette.ink,
           }}
         >
+          {/* Brand mast — sits above the main panel so a recipient
+              recognizes the sender immediately, before any framing prose. */}
+          <Section
+            style={{
+              padding: "0 0 14px",
+              textAlign: "left" as const,
+            }}
+          >
+            <Row>
+              <Column style={{ verticalAlign: "middle" as const }}>
+                <Text
+                  style={{
+                    margin: 0,
+                    fontFamily: fontStack,
+                    fontSize: 18,
+                    fontStyle: "italic",
+                    fontWeight: 400,
+                    letterSpacing: "-0.01em",
+                    color: palette.ink,
+                  }}
+                >
+                  The Threshold Study
+                </Text>
+              </Column>
+              <Column
+                style={{
+                  verticalAlign: "middle" as const,
+                  textAlign: "right" as const,
+                  width: "40%",
+                }}
+              >
+                <Link
+                  href="https://mayliveforever.com"
+                  style={{
+                    fontFamily: monoStack,
+                    fontSize: 11,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: palette.muted,
+                    textDecoration: "none",
+                  }}
+                >
+                  mayliveforever.com
+                </Link>
+              </Column>
+            </Row>
+          </Section>
           <Section
             style={{
               backgroundColor: palette.panel,
