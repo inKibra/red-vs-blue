@@ -108,7 +108,7 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
     try {
       await sendEmail(ctx.env, {
         to: s.email,
-        subject: `${totalResponses} people answered. Now we need your 3.`,
+        subject: `${totalResponses} answered. We just need 3 more — yours.`,
         template: {
           kind: "preliminary",
           props: {

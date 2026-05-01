@@ -58,7 +58,7 @@ export default function PreliminaryEmail({
     <Html>
       <Head />
       <Preview>
-        Two-thirds of respondents picked their answer with maximum confidence. The crowd is still split.
+        {totalResponses.toLocaleString()} answered. The split is one percentage point from a coin flip. Send three friends and watch your room form.
       </Preview>
       <Body style={{ backgroundColor: palette.page, margin: 0, padding: 0 }}>
         <Container
@@ -87,7 +87,7 @@ export default function PreliminaryEmail({
                 textTransform: "uppercase",
               }}
             >
-              Threshold Study · interim
+              Threshold Study · interim drop
             </Text>
             <Heading
               style={{
@@ -98,10 +98,12 @@ export default function PreliminaryEmail({
                 letterSpacing: "-0.025em",
               }}
             >
-              The crowd is split. Your friends are the missing layer.
+              {totalResponses.toLocaleString()} answered. We just need 3 more — yours.
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              {totalResponses.toLocaleString()} people have answered. The crowd is close to a coin flip — and the gap between what people will choose, what they&apos;ll recommend, and what they expect everyone else to do is the part we can&apos;t see from a global average.
+              The crowd is split about evenly. But the global number is the
+              average of every friend group mixed together. Your room is one of
+              them. We can’t see it until you bring it.
             </Text>
 
             <Section style={{ margin: "28px 0 0" }}>
@@ -121,9 +123,27 @@ export default function PreliminaryEmail({
               </Row>
             </Section>
 
-            <Text style={{ margin: "24px 0 0", fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              Average confidence is {averageConfidence.toFixed(2)} / 5. People feel sure. They are sure in different directions.
-            </Text>
+            <Section
+              style={{
+                margin: "24px 0 0",
+                padding: "14px 18px",
+                backgroundColor: palette.accentSoft,
+                borderLeft: `3px solid ${palette.accent}`,
+              }}
+            >
+              <Text style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: palette.ink }}>
+                <strong style={{ fontWeight: 600 }}>Confidence is {averageConfidence.toFixed(2)} / 5.</strong>{" "}
+                People feel sure. They’re sure in different directions — and the
+                same person gets more cautious by{" "}
+                <strong style={{ fontWeight: 600 }}>
+                  {Math.round(
+                    Math.abs(personalChoiceThresholdPct - dependentRecommendationThresholdPct) * 10,
+                  ) / 10}{" "}
+                  points
+                </strong>{" "}
+                when the question is for someone in their care.
+              </Text>
+            </Section>
 
             <Hr style={{ borderColor: palette.rule, margin: "28px 0 24px" }} />
 
@@ -136,13 +156,17 @@ export default function PreliminaryEmail({
                 letterSpacing: "-0.02em",
               }}
             >
-              What we still need: 3 people.
+              Send your link to 3 people.
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              The interesting layer is your friend graph. Globally, the crowd is split — but a clique of seven friends might be 6-1 the other way. We can&apos;t see that from totals.
+              Three is the threshold. Once three friends answer through your
+              link, your /results unlocks the cohort view: your crowd’s split
+              vs the world, your crowd’s confidence vs the world, and how the
+              answer drifts as the chain widens.
             </Text>
             <Text style={{ margin: "16px 0 0", fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              Send your personal link to 3 people. Once 3 of them answer, your /results page unlocks the full cohort comparison: your group&apos;s split vs everyone, your group&apos;s confidence vs everyone, and how the answer changes when responsibility is involved.
+              <strong style={{ fontWeight: 600 }}>Send the link, not this email.</strong>{" "}
+              The email has spoilers; the link keeps the question clean.
             </Text>
 
             <Section style={{ textAlign: "center" as const, margin: "32px 0 8px" }}>
@@ -160,7 +184,7 @@ export default function PreliminaryEmail({
                   textDecoration: "none",
                 }}
               >
-                Open my share link
+                Send your link →
               </Button>
             </Section>
             <Text
@@ -175,9 +199,7 @@ export default function PreliminaryEmail({
             >
               {shareUrl}
             </Text>
-            <Text style={{ margin: "16px 0 0", fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              Please send the link, not this email — the email has spoilers, the link keeps the question clean.
-            </Text>
+
 
             <Hr style={{ borderColor: palette.rule, margin: "28px 0 14px" }} />
             <Text style={{ margin: 0, fontSize: 13, color: palette.muted }}>
@@ -188,7 +210,9 @@ export default function PreliminaryEmail({
 
             <Hr style={{ borderColor: palette.rule, margin: "20px 0 14px" }} />
             <Text style={{ margin: 0, fontSize: 12, color: palette.muted }}>
-              You&apos;re receiving this one-time interim note because you confirmed your email after responding. Final results will still be sent when the study closes.
+              You’re getting this one-time interim note because you confirmed
+              your email after responding. Final results land in your inbox
+              when the study closes.
             </Text>
             <Text style={{ margin: "8px 0 0", fontSize: 12, color: palette.muted }}>
               <Link href={unsubscribeUrl} style={{ color: palette.muted, textDecoration: "underline" }}>
