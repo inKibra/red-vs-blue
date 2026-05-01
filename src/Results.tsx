@@ -155,7 +155,7 @@ function ResultsView({ data }: { data: PublicResultsResponse }) {
 /*  Cohort sections (formerly /c/<code>, now folded inline into /results)   */
 /* ====================================================================== */
 
-function CohortPanels({ cohort }: { cohort: CohortResponse }) {
+export function CohortPanels({ cohort }: { cohort: CohortResponse }) {
   const { tree, buckets, world, kAnonThreshold } = cohort;
   const headline =
     tree.total === 0

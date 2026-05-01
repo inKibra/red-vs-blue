@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCaseStudyData } from "./api";
 import { buildPrompt, labelsFor } from "@shared/conditions";
+import { CohortPanels } from "./Results";
 import type {
   CaseStudyResponse,
+  CohortBucket,
+  CohortNode,
+  CohortResponse,
   LabelCondition,
   MechanismFrame,
   OrderCondition,
@@ -124,39 +128,53 @@ type ResponsibilityKey = (typeof RESPONSIBILITY_FRAMES)[number]["key"];
 // Page root
 // =========================================================================
 
+type LoadState =
+  | { kind: "loading" }
+  | { kind: "ok"; data: CaseStudyResponse }
+  | { kind: "gated" }
+  | { kind: "error"; message: string };
+
 export function CaseStudy() {
-  const [data, setData] = useState<CaseStudyResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [load, setLoad] = useState<LoadState>({ kind: "loading" });
 
   useEffect(() => {
     let cancelled = false;
     getCaseStudyData()
-      .then((d) => {
-        if (!cancelled) setData(d);
+      .then((res) => {
+        if (cancelled) return;
+        if (res.status === "gated") setLoad({ kind: "gated" });
+        else setLoad({ kind: "ok", data: res.data });
       })
       .catch((e: unknown) => {
-        if (!cancelled) setError((e as Error).message ?? "Failed to load.");
+        if (cancelled) return;
+        setLoad({ kind: "error", message: (e as Error).message ?? "Failed to load." });
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (error) {
-    return (
-      <CaseStudyShell>
-        <p className="cs-error">Could not load case-study data: {error}</p>
-      </CaseStudyShell>
-    );
-  }
-
-  if (!data) {
+  if (load.kind === "loading") {
     return (
       <CaseStudyShell>
         <p className="cs-loading">Loading the latest numbers…</p>
       </CaseStudyShell>
     );
   }
+
+  if (load.kind === "error") {
+    return (
+      <CaseStudyShell>
+        <p className="cs-error">Could not load case-study data: {load.message}</p>
+      </CaseStudyShell>
+    );
+  }
+
+  if (load.kind === "gated") {
+    return <GatePage />;
+  }
+
+  const data = load.data;
 
   return (
     <CaseStudyShell asOf={data.dataAsOf} totalResponses={data.totalResponses}>
@@ -810,15 +828,7 @@ function PvrRow({
 // =========================================================================
 
 function CohortTease() {
-  // Three illustrative friend-graph cohorts whose internal splits diverge
-  // from the global ~52/48. Numbers are fictional; the section is a tease,
-  // not a finding.
-  const cohorts = [
-    { label: "Cohort A", threshold: 80, n: 10 },
-    { label: "Cohort B", threshold: 33, n: 9 },
-    { label: "Cohort C", threshold: 60, n: 15 },
-  ];
-
+  const mockCohort = useMemo(buildIllustrativeCohort, []);
   return (
     <section className="cs-section cs-cohort">
       <div className="cs-section-eyebrow">The missing layer</div>
@@ -832,62 +842,23 @@ function CohortTease() {
         need the graph.
       </p>
 
-      <div className="cs-cohort-illus">
-        <div className="cs-cohort-illus-eyebrow">Illustrative</div>
-        <div className="cs-cohort-illus-row">
-          {cohorts.map((c) => (
-            <div key={c.label} className="cs-cohort-illus-card">
-              <div className="cs-cohort-illus-name">{c.label}</div>
-              <div className="cs-cohort-illus-pct">{c.threshold}%</div>
-              <StackBar thresholdPct={c.threshold} thin />
-              <div className="cs-cohort-illus-meta">
-                group-dependent · n = {c.n}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="cs-cohort-illus-footer">
-          Global average: ~52%. Each cohort is a different room.
-        </div>
-      </div>
-
-      <h3 className="cs-cohort-preview-title">What /results unlocks for you</h3>
       <p className="cs-prose">
         Once your share link picks up answers from a few friends, the cohort
-        section of /results fills in. These are the panels you see, with your
-        own group’s numbers in place of the placeholders below.
+        section of /results fills in. Below is exactly what that page renders,
+        with placeholder numbers in place of your friend graph’s actual ones.
       </p>
 
-      <div className="cs-cohort-preview-grid">
-        <CohortPreviewCard
-          eyebrow="Friends vs the world"
-          title="Group-dependent share"
-          worldLabel="World"
-          worldPct={52}
-          cohortLabel="Your friends"
-          cohortPct={71}
-          gloss="Your group leans further toward the group-dependent option than the world average does."
-        />
-        <CohortPreviewCard
-          eyebrow="Confidence"
-          title="Average confidence (out of 5)"
-          worldLabel="World"
-          worldPct={84}
-          cohortLabel="Your friends"
-          cohortPct={92}
-          unit="0–5 scale, shown as % of max"
-          gloss="Your friends are more sure of their answers than the world average. Suggestive, not conclusive — confidence intervals depend on n."
-        />
-        <CohortPreviewCard
-          eyebrow="Responsibility shift"
-          title="Personal → recommend-to-dependent gap"
-          worldLabel="World gap"
-          worldPct={8}
-          cohortLabel="Your gap"
-          cohortPct={20}
-          gloss="When your friends are answering for someone else, they shift further toward the safer option than the average respondent does."
-          asPoints
-        />
+      <div className="cs-cohort-actual">
+        <div className="cs-cohort-actual-banner">
+          <span>Illustrative</span>
+          <span>
+            Your /results page will show your cohort’s actual numbers in place
+            of these placeholders.
+          </span>
+        </div>
+        <div className="cs-cohort-actual-stage">
+          <CohortPanels cohort={mockCohort} />
+        </div>
       </div>
 
       <p className="cs-prose">
@@ -899,85 +870,92 @@ function CohortTease() {
   );
 }
 
-function CohortPreviewCard({
-  eyebrow,
-  title,
-  worldLabel,
-  worldPct,
-  cohortLabel,
-  cohortPct,
-  gloss,
-  unit,
-  asPoints,
-}: {
-  eyebrow: string;
-  title: string;
-  worldLabel: string;
-  worldPct: number;
-  cohortLabel: string;
-  cohortPct: number;
-  gloss: string;
-  unit?: string;
-  asPoints?: boolean;
-}) {
-  const fmt = (v: number) => (asPoints ? `${v} pts` : `${v}%`);
-  const max = Math.max(worldPct, cohortPct, 100);
-  return (
-    <div className="cs-cohort-preview-card">
-      <div className="cs-cohort-preview-eyebrow">{eyebrow}</div>
-      <div className="cs-cohort-preview-card-title">{title}</div>
-      <div className="cs-cohort-preview-rows">
-        <CohortBar
-          label={worldLabel}
-          value={worldPct}
-          maxValue={max}
-          tone="muted"
-          asPoints={asPoints}
-        />
-        <CohortBar
-          label={cohortLabel}
-          value={cohortPct}
-          maxValue={max}
-          tone="accent"
-          asPoints={asPoints}
-        />
-      </div>
-      {unit && <div className="cs-cohort-preview-unit">{unit}</div>}
-      <p className="cs-cohort-preview-gloss">{gloss}</p>
-      <div className="cs-cohort-preview-delta">
-        Δ {fmt(Math.abs(cohortPct - worldPct))} vs the world
-      </div>
-    </div>
-  );
-}
+/**
+ * Construct a credible illustrative CohortResponse for the case-study tease.
+ * Numbers are fictional and the section is clearly banner-tagged as such.
+ * Tree shape: 8 direct, 5 second-degree, 2 deeper — the deeper bucket sits
+ * below K_ANON=3 so the locked-bucket UX renders too, demonstrating the
+ * full cohort layout the live page produces.
+ */
+function buildIllustrativeCohort(): CohortResponse {
+  const directNodes: CohortNode[] = Array.from({ length: 8 }, (_, i) => ({
+    id: `D${i}`,
+    parent: "ROOT",
+    depth: 1,
+    personalChoice: i < 6 ? "threshold" : "safe",
+  }));
+  const secondaryNodes: CohortNode[] = Array.from({ length: 5 }, (_, i) => ({
+    id: `S${i}`,
+    parent: `D${i % 4}`,
+    depth: 2,
+    personalChoice: i < 3 ? "threshold" : "safe",
+  }));
+  const deeperNodes: CohortNode[] = Array.from({ length: 2 }, (_, i) => ({
+    id: `X${i}`,
+    parent: `S${i % 3}`,
+    depth: 3,
+    personalChoice: "threshold",
+  }));
 
-function CohortBar({
-  label,
-  value,
-  maxValue,
-  tone,
-  asPoints,
-}: {
-  label: string;
-  value: number;
-  maxValue: number;
-  tone: "accent" | "muted";
-  asPoints?: boolean;
-}) {
-  return (
-    <div className="cs-cohort-bar-row">
-      <div className="cs-cohort-bar-label">{label}</div>
-      <div className="cs-cohort-bar-track">
-        <div
-          className={`cs-cohort-bar-fill cs-cohort-bar-fill--${tone}`}
-          style={{ width: `${maxValue === 0 ? 0 : (value / maxValue) * 100}%` }}
-        />
-      </div>
-      <div className="cs-cohort-bar-value">
-        {asPoints ? `${value}` : `${value}%`}
-      </div>
-    </div>
-  );
+  const totalBucket: CohortBucket = {
+    count: 15,
+    personal: { thresholdPercent: 71, safePercent: 29 },
+    community: { thresholdPercent: 75, safePercent: 25 },
+    dependent: { thresholdPercent: 50, safePercent: 50 },
+    expected: { thresholdPercent: 80, safePercent: 20 },
+    averageConfidence: 4.4,
+  };
+  const directBucket: CohortBucket = {
+    count: 8,
+    personal: { thresholdPercent: 75, safePercent: 25 },
+    community: { thresholdPercent: 78, safePercent: 22 },
+    dependent: { thresholdPercent: 56, safePercent: 44 },
+    expected: { thresholdPercent: 84, safePercent: 16 },
+    averageConfidence: 4.5,
+  };
+  const secondaryBucket: CohortBucket = {
+    count: 5,
+    personal: { thresholdPercent: 60, safePercent: 40 },
+    community: { thresholdPercent: 65, safePercent: 35 },
+    dependent: { thresholdPercent: 40, safePercent: 60 },
+    expected: { thresholdPercent: 70, safePercent: 30 },
+    averageConfidence: 4.2,
+  };
+  // Below K_ANON=3 so the live page locks this bucket. Showing the locked
+  // state in the preview is intentional — readers should see the gate.
+  const deeperBucket: CohortBucket = {
+    count: 2,
+    personal: null,
+    community: null,
+    dependent: null,
+    expected: null,
+    averageConfidence: null,
+  };
+
+  return {
+    code: "ILLUSTRATIVE",
+    tree: { direct: 8, secondary: 5, deeper: 2, total: 15 },
+    buckets: {
+      total: totalBucket,
+      direct: directBucket,
+      secondary: secondaryBucket,
+      deeper: deeperBucket,
+    },
+    world: {
+      totalResponses: 223,
+      personal: { thresholdPercent: 52, safePercent: 48 },
+      community: { thresholdPercent: 54, safePercent: 46 },
+      dependent: { thresholdPercent: 44, safePercent: 56 },
+      expected: { thresholdPercent: 58, safePercent: 42 },
+    },
+    nodes: [
+      { id: "ROOT", parent: null, depth: 0, personalChoice: "threshold" },
+      ...directNodes,
+      ...secondaryNodes,
+      ...deeperNodes,
+    ],
+    kAnonThreshold: 3,
+  };
 }
 
 // =========================================================================
@@ -1046,6 +1024,61 @@ function WhatElseCouldVary() {
 // =========================================================================
 // CTA
 // =========================================================================
+
+// =========================================================================
+// GatePage — shown when the requester has not yet responded to the survey.
+//
+// The case study reveals the experimental design (the four mechanism
+// frames, the by-condition breakdown, the responsibility split). A reader
+// who sees that before answering is no longer naive, and any subsequent
+// response from them lives in a different cohort. Rather than corrupt
+// the data, we ask them to take the survey first.
+//
+// Mirroring an admin path through here? Take the survey too — the gate
+// is not authorization, it is methodological. Magic-link recovery is the
+// fallback for already-responded users on a fresh device.
+// =========================================================================
+function GatePage() {
+  return (
+    <div className="cs-shell">
+      <header className="cs-mast">
+        <a href="/" className="cs-back">
+          ← The Threshold Study
+        </a>
+        <span className="cs-meta">Case study · gated</span>
+      </header>
+      <article className="cs-article cs-gate">
+        <p className="cs-eyebrow">Case study · take the survey first</p>
+        <h1 className="cs-headline">First, answer the question.</h1>
+        <p className="cs-deck">
+          This page reveals exactly how the survey was framed and how the
+          wording moves the answer. Reading it before responding would prime
+          your answer in a way we can no longer correct for. So we ask you to
+          take the survey first — then come back and the analysis is yours.
+        </p>
+        <div className="cs-cta-grid cs-gate-actions">
+          <a className="cs-cta-card cs-cta-card--primary" href="/">
+            <div className="cs-cta-card-eyebrow">Sixty seconds</div>
+            <div className="cs-cta-card-headline">Take the survey →</div>
+            <div className="cs-cta-card-body">
+              One question. Then this page unlocks for you.
+            </div>
+          </a>
+          <a className="cs-cta-card" href="/results">
+            <div className="cs-cta-card-eyebrow">Already responded?</div>
+            <div className="cs-cta-card-headline">
+              Get a magic link →
+            </div>
+            <div className="cs-cta-card-body">
+              Different device? Open /results and request a new email link.
+              Clicking it restores your session and unlocks this page.
+            </div>
+          </a>
+        </div>
+      </article>
+    </div>
+  );
+}
 
 function CtaBlock() {
   return (

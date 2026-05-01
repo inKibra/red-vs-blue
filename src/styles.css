@@ -2688,3 +2688,73 @@ button, textarea, input { font: inherit; }
   color: var(--ink-2);
 }
 .cs-whatelse-item strong { color: var(--ink); font-weight: 600; }
+
+/* =====================================================================
+   Case study v3 — cohort tease becomes a literal preview of /results,
+   chart palette aligns with the live cohort viz, and the page is gated
+   to respondents only.
+   ===================================================================== */
+
+/* Pull the case-study chart palette into alignment with the actual
+   /results cohort viz so the tease does not look like a different chart
+   universe. --communal/--selfish are defined later in this file (around
+   line 1037); we override the v2 cs tokens to alias them. */
+:root {
+  --cs-blue: var(--communal);
+  --cs-red: var(--selfish);
+  --cs-blue-dim: #6b87ad;
+  --cs-red-dim: #c87f70;
+}
+
+/* CohortTease wrapper. The CohortPanels component renders sections with
+   global cohort styles; we wrap them in a banner and a slight neutral
+   inset so the tease reads as a preview, not the canonical viz. */
+.cs-cohort-actual {
+  margin: 24px 0 24px;
+  border: 1px solid var(--accent-dark);
+  background: var(--panel-2);
+}
+.cs-cohort-actual-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  padding: 12px 18px;
+  background: var(--accent-dark);
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cs-cohort-actual-banner > span:first-child {
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 2px 8px;
+  background: var(--panel);
+  color: var(--accent-dark);
+}
+.cs-cohort-actual-banner > span:not(:first-child) {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: #cdd5c5;
+  line-height: 1.45;
+}
+.cs-cohort-actual-stage {
+  padding: 22px 22px 28px;
+}
+/* The CohortPanels component renders .cohort-section blocks with their own
+   spacing and the .results-hero block too. Inside the case-study tease,
+   reduce the top padding on the first hero so it sits flush with our
+   banner without an awkward double-margin. */
+.cs-cohort-actual-stage .results-hero { margin-top: 0 !important; padding-top: 0; }
+.cs-cohort-actual-stage .results-hero .results-headline { font-size: clamp(28px, 4vw, 36px); }
+.cs-cohort-actual-stage .results-hero .results-deck { color: var(--ink-2); }
+.cs-cohort-actual-stage .cohort-section:first-of-type { margin-top: 24px; }
+
+/* GatePage layout: same shell, single section. Reuses .cs-* tokens. */
+.cs-gate { padding: clamp(36px, 6vw, 64px); }
+.cs-gate .cs-deck { max-width: 64ch; margin-bottom: 32px; }
+.cs-gate-actions { margin-top: 0; }

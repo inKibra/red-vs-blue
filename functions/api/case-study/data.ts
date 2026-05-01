@@ -1,3 +1,4 @@
+import { readCookie } from "../../_lib/cookie";
 import type { RouteContext } from "../../_lib/env";
 import { requireEnv } from "../../_lib/env";
 import { error, json, methodNotAllowed } from "../../_lib/http";
@@ -55,6 +56,21 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
   if (ctx.request.method !== "GET") return methodNotAllowed(["GET"]);
   requireEnv(ctx.env);
 
+  // Gate: only respondents see the case study payload. The page reveals the
+  // experimental design (by-frame breakdown, label effects, etc.); reading
+  // it before answering would prime the next response. We accept any of the
+  // three cookies that mark a respondent: rb_voted (set on submit AND on
+  // magic-link claim), rb_assignment (canonical response token), or
+  // rb_preview (verified subscriber). The discriminating field tells the
+  // client to render the "take the survey first" gate.
+  const cookies = ctx.request.headers.get("Cookie");
+  const hasResponded =
+    readCookie(cookies, "rb_voted") === "1" ||
+    readCookie(cookies, "rb_assignment") !== null ||
+    readCookie(cookies, "rb_preview") !== null;
+  if (!hasResponded) {
+    return error(403, "Take the survey first.");
+  }
   try {
     const [settings, topline, byFrame, bySalience, byLabelCondition, byOrderCondition] =
       await Promise.all([

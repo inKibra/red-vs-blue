@@ -131,7 +131,20 @@ export async function sendPreviewLink(
   return asJson(await postJson("/api/poll/preview-link", body));
 }
 
-/** Fetch the public case-study payload (no auth, 30s edge-cached). */
-export async function getCaseStudyData(): Promise<CaseStudyResponse> {
-  return asJson<CaseStudyResponse>(await fetch("/api/case-study/data"));
+/**
+ * Fetch the public case-study payload (no auth, 30s edge-cached).
+ *
+ * Returns a discriminated union so the page can render a "take the survey
+ * first" gate when the API gates the response on cookie state. The data
+ * endpoint returns 403 if the requester has no respondent cookie; we map
+ * that specific status to `{ status: 'gated' }`. Any other failure throws
+ * via asJson, surfacing as an error in the page UI.
+ */
+export async function getCaseStudyData(): Promise<
+  { status: "ok"; data: CaseStudyResponse } | { status: "gated" }
+> {
+  const res = await fetch("/api/case-study/data");
+  if (res.status === 403) return { status: "gated" };
+  const data = await asJson<CaseStudyResponse>(res);
+  return { status: "ok", data };
 }
