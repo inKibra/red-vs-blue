@@ -101,25 +101,49 @@ export default function PreliminaryEmail({
               The preliminary results are in.
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              {totalResponses.toLocaleString()} people answered the same question. Globally the
-              split is almost a coin flip. But the average hides the most
-              interesting thing in the data: how much the wording itself
-              moved the answer.
+              {totalResponses.toLocaleString()} people answered the same question.
+              Globally the split is almost a coin flip — but the average hides
+              the most interesting thing in the data: how much the wording
+              itself moved the answer. We just published the full breakdown,
+              with charts, at{" "}
+              <Link
+                href={caseStudyUrl}
+                style={{
+                  color: palette.accent,
+                  fontWeight: 600,
+                  textDecoration: "underline",
+                }}
+              >
+                /case-study →
+              </Link>
+              .
+            </Text>
+            <Text
+              style={{
+                margin: "14px 0 0",
+                fontSize: 17,
+                lineHeight: 1.6,
+                color: palette.ink,
+              }}
+            >
+              <strong style={{ fontWeight: 600 }}>And we just need 3 more from you.</strong>{" "}
+              Once three friends answer through your link, your /results
+              unlocks the cohort layer below.
             </Text>
 
             <Section style={{ margin: "28px 0 0" }}>
               <Row>
-                <Column style={{ width: "25%", paddingRight: 4 }}>
-                  <StatBlock label="Chose group-dependent" value={`${personalChoiceThresholdPct}%`} small />
+                <Column style={{ width: "25%", paddingRight: 4, verticalAlign: "top" as const }}>
+                  <StatBlock label="Personal pick" value={`${personalChoiceThresholdPct}%`} small />
                 </Column>
-                <Column style={{ width: "25%", padding: "0 4px" }}>
-                  <StatBlock label="Recommend it publicly" value={`${publicRecommendationThresholdPct}%`} small />
+                <Column style={{ width: "25%", padding: "0 4px", verticalAlign: "top" as const }}>
+                  <StatBlock label="Public rec" value={`${publicRecommendationThresholdPct}%`} small />
                 </Column>
-                <Column style={{ width: "25%", padding: "0 4px" }}>
-                  <StatBlock label="Recommend it to a dependent" value={`${dependentRecommendationThresholdPct}%`} small />
+                <Column style={{ width: "25%", padding: "0 4px", verticalAlign: "top" as const }}>
+                  <StatBlock label="Care rec" value={`${dependentRecommendationThresholdPct}%`} small />
                 </Column>
-                <Column style={{ width: "25%", paddingLeft: 4 }}>
-                  <StatBlock label="Expect the majority will" value={`${expectedMajorityThresholdPct}%`} small />
+                <Column style={{ width: "25%", paddingLeft: 4, verticalAlign: "top" as const }}>
+                  <StatBlock label="Predicted" value={`${expectedMajorityThresholdPct}%`} small />
                 </Column>
               </Row>
             </Section>
@@ -215,16 +239,28 @@ export default function PreliminaryEmail({
 
             <Hr style={{ borderColor: palette.rule, margin: "28px 0 24px" }} />
 
+            <Text
+              style={{
+                margin: 0,
+                color: palette.accent,
+                fontFamily: monoStack,
+                fontSize: 11,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+              }}
+            >
+              Invite 3 — unlock yours
+            </Text>
             <Heading
               style={{
-                margin: "0 0 14px",
+                margin: "8px 0 14px",
                 fontWeight: 300,
-                fontSize: 24,
+                fontSize: 28,
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
             >
-              Want your version of these numbers?
+              Send your link to 3 people.
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
               Three is the threshold. Once three friends answer through your
@@ -304,6 +340,11 @@ function StatBlock({
         backgroundColor: palette.accentSoft,
         border: `1px solid ${palette.rule}`,
         padding: small ? "12px 12px" : "20px 18px",
+        /* Force every box in a row to the same outer height so they read
+           as a row of equals regardless of label length. height (not just
+           minHeight) is what email clients respect on table cells. */
+        height: small ? 92 : 140,
+        verticalAlign: "top" as const,
       }}
     >
       <Text
