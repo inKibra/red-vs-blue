@@ -2758,3 +2758,55 @@ button, textarea, input { font: inherit; }
 .cs-gate { padding: clamp(36px, 6vw, 64px); }
 .cs-gate .cs-deck { max-width: 64ch; margin-bottom: 32px; }
 .cs-gate-actions { margin-top: 0; }
+
+/* /results mast: case-study link sits next to the page eyebrow */
+.results-mast-nav {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 18px;
+}
+.results-mast-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+}
+.results-mast-link:hover { color: var(--panel); border-bottom-color: var(--accent); }
+
+/* Ghost variant of the share button — used for the case-study CTA so it
+   sits beside the primary 'Share on X' without out-shouting it. */
+.share-twitter--ghost {
+  background: transparent;
+  border: 1px solid var(--accent-dark);
+  color: var(--accent-dark);
+}
+.share-twitter--ghost:hover {
+  background: var(--accent-dark);
+  color: var(--panel);
+}
+
+/* /results footer link */
+.results-footer-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
+.results-footer-link:hover { color: var(--accent-dark); border-bottom-style: solid; }
+
+/* Done-page case-study link — below the share row so it does not steal
+   focus from the primary share CTA. */
+.share-case-study {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
+.share-case-study:hover { color: var(--ink); }

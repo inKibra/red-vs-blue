@@ -44,7 +44,10 @@ export function Results() {
     <div className="results-shell">
       <header className="results-mast">
         <a href="/" className="results-back">← The Threshold Study</a>
-        <span className="results-meta">Results</span>
+        <nav className="results-mast-nav">
+          <a href="/case-study" className="results-mast-link">Case study</a>
+          <span className="results-meta">Results</span>
+        </nav>
       </header>
 
       {state.kind === "loading" && (
@@ -105,6 +108,9 @@ function ResultsView({ data }: { data: PublicResultsResponse }) {
             <a className="share-twitter" href={twitterUrl} target="_blank" rel="noopener">
               Share on X
             </a>
+            <a className="share-twitter share-twitter--ghost" href="/case-study">
+              Read the case study →
+            </a>
             {data.publishedAt && (
               <span className="results-published-at">
                 Published {fmt(data.publishedAt)}
@@ -143,8 +149,10 @@ function ResultsView({ data }: { data: PublicResultsResponse }) {
 
       <footer className="results-footer">
         <p className="muted-note">
-          Top-line numbers only. The full per-condition breakdown is in the
-          paper / writeup that accompanies this study.
+          Top-line numbers only.{" "}
+          <a href="/case-study" className="results-footer-link">
+            Read the full case study →
+          </a>
         </p>
       </footer>
     </main>

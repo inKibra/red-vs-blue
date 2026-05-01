@@ -688,6 +688,9 @@ function Done({
             {copied ? "Link copied" : "Copy link"}
           </button>
         </div>
+        <a className="share-case-study" href="/case-study">
+          Read the case study →
+        </a>
       </div>
 
       {shareCode && (
