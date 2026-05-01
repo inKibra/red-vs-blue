@@ -3305,3 +3305,27 @@ button, textarea, input { font: inherit; }
   .cs-cohort-stepper-tick { padding: 6px 2px 4px; }
   .cs-cohort-stepper-tick-label { display: none; }
 }
+
+/* Early-position cohort share block — slightly more compact than the
+   bottom-of-page CtaBlock share, so it doesn’t out-shout the walkthrough
+   that follows immediately after it. */
+.cs-cohort-share--early {
+  margin-top: 18px;
+  margin-bottom: 28px;
+  padding: 16px 18px 18px;
+}
+.cs-cohort-share--early .cs-cohort-share-body {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* Lead-in label + one-line description that sits right above the stepper. */
+.cs-cohort-walk-intro {
+  margin: 6px 0 12px;
+  display: grid;
+  gap: 6px;
+}
+.cs-cohort-walk-intro .cs-prose {
+  margin: 0;
+  max-width: 60ch;
+}

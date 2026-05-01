@@ -188,6 +188,11 @@ export function CaseStudy() {
   }
 
   const data = load.data;
+  // Live overall personal-choice threshold% — used by the cohort prose so
+  // hardcoded numbers can’t drift away from what the hero is showing.
+  const overallTotal =
+    data.overall.personalChoice.threshold + data.overall.personalChoice.safe;
+  const worldPersonalPct = pct(data.overall.personalChoice.threshold, overallTotal) ?? 0;
   return (
     <CaseStudyShell asOf={data.dataAsOf} totalResponses={data.totalResponses}>
       <Hero data={data} />
@@ -198,7 +203,10 @@ export function CaseStudy() {
       <SecondaryVariations data={data} />
       <ResponsibilityShifter data={data} />
       <PredictionVsReality data={data} />
-      <CohortTease shareCode={data.viewerShareCode} />
+      <CohortTease
+        shareCode={data.viewerShareCode}
+        worldPersonalPct={worldPersonalPct}
+      />
       <CtaBlock shareCode={data.viewerShareCode} />
     </CaseStudyShell>
   );
@@ -847,7 +855,14 @@ function PvrRow({
 // CohortTease — beefed-up preview of what /results unlocks
 // =========================================================================
 
-export function CohortTease({ shareCode }: { shareCode: string | null }) {
+export function CohortTease({
+  shareCode,
+  worldPersonalPct,
+}: {
+  shareCode: string | null;
+  /** Live overall threshold% used in prose; rounded for display. */
+  worldPersonalPct: number;
+}) {
   const mock = useMemo(buildSampleCohort, []);
   const { tree, buckets, world, nodes, kAnonThreshold } = mock;
   const viewerChoice = nodes.find((n) => n.depth === 0)?.personalChoice ?? null;
@@ -940,9 +955,9 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
       title: "All four answers, your cohort against the world.",
       prose: (
         <>
-          The four-question profile in plain horizontal bars. Each row is
-          one question; the cohort’s split sits above the world’s. The gap
-          between the two is where your room disagrees with the average.
+          Each row is one of the four questions: cohort’s split on top,
+          world’s underneath. The gap is where your room disagrees with the
+          average.
         </>
       ),
       viz: (
@@ -960,10 +975,9 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
       title: "The same four questions, broken out by tier.",
       prose: (
         <>
-          Same chart, three slices: people you invited directly, the layer
-          they invited, and everyone past that. If the three rows agree,
-          the message is stable as it spreads. If they disagree, you’re
-          watching it deform in flight.
+          Three slices by tier: direct, second-degree, deeper. Agreement means
+          the signal travels cleanly. Disagreement means it deforms as it
+          moves.
         </>
       ),
       viz: (
@@ -1009,23 +1023,35 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
       <h2 className="cs-h2">The crowd is an average. Your friends are a sample.</h2>
 
       <p className="cs-prose">
-        Everything above is the global view: hundreds of strangers averaged into
-        a single number. It tells you what <em>the crowd</em> did. It does not
-        tell you what your <strong>friends</strong> would do.
+        Everything above is one number per question — the crowd, averaged.
+        It can’t tell you what your <strong>friends</strong> would do.
       </p>
       <p className="cs-prose cs-prose--callout">
-        A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
-        both. Probably more variety than that. The topline can’t see geometry.
+        A {Math.round(worldPersonalPct)}/{Math.round(100 - worldPersonalPct)} world is the average of 80/20 rooms
+        and 20/80 rooms. Probably both. Probably more variety. The topline
+        can’t see geometry.
       </p>
 
-      <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
-      <p className="cs-prose">
-        Once your share link picks up answers from a few friends, the cohort
-        section of /results fills in. Step through the {beats.length} pieces
-        below to see what it shows, with placeholder numbers from a sample
-        cohort of <strong>{tree.total} respondents</strong> ({tree.direct}{" "}
-        direct, {tree.secondary} second-degree, {tree.deeper} deeper).
-      </p>
+      <div className="cs-cohort-share cs-cohort-share--early">
+        <div className="cs-cohort-share-eyebrow">Find out what your room says</div>
+        <p className="cs-cohort-share-body">
+          Send the link to three friends. Once they answer, the layer below
+          unlocks on your /results with their actual numbers.
+        </p>
+        <SharePanel
+          shareCode={shareCode}
+          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+        />
+      </div>
+
+      <div className="cs-cohort-walk-intro">
+        <span className="cs-section-eyebrow">What it unlocks</span>
+        <p className="cs-prose">
+          Below is what your cohort page actually shows, beat by beat.
+          Numbers come from a sample cohort of <strong>{tree.total}</strong>{" "}
+          ({tree.direct} direct, {tree.secondary} second-degree, {tree.deeper} deeper).
+        </p>
+      </div>
 
       <div className="cs-cohort-stepper" aria-label="Cohort walkthrough">
         <div className="cs-cohort-stepper-ticks" role="tablist" aria-label="Walkthrough step">
@@ -1086,23 +1112,10 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
       </div>
 
       <p className="cs-prose">
-        The world said 52%. Your room might say something else entirely. The
-        only way to find out is to ask three of them.
+        The world said {Math.round(worldPersonalPct)}%. Your room might say
+        something else entirely. The only way to find out is to ask three of
+        them.
       </p>
-
-      <div className="cs-cohort-share">
-        <div className="cs-cohort-share-eyebrow">Send your link to three</div>
-        <p className="cs-cohort-share-body">
-          Three is the threshold. Once three friends answer through your link,
-          the cohort section of /results unlocks with their actual numbers in
-          place of these placeholders. Send the link, not this page—the case
-          study has spoilers; the survey link keeps the question clean.
-        </p>
-        <SharePanel
-          shareCode={shareCode}
-          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
-        />
-      </div>
     </section>
   );
 }
