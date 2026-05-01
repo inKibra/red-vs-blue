@@ -42,17 +42,23 @@ export type PreliminaryEmailProps = {
 
 // Palette pulled directly from src/styles.css :root variables on the website,
 // so the email reads as the same product. accent matches the site’s
-// --accent-dark (#263d31), accentSoft is the sage tint used for callouts.
+// --accent-dark (#263d31), accentSoft is the sage tint used for callouts,
+// rail* mirrors the dark left-rail panel the site puts the wordmark in.
 const palette = {
   page: "#f4f1e8",
   panel: "#fbf8ef",
   ink: "#171a16",
   inkSoft: "#41433a",
-  muted: "#5b6055",     // matches site --muted (WCAG AA against the cream panels)
+  muted: "#5b6055",      // matches site --muted (WCAG AA against the cream panels)
   rule: "#171a1626",
-  accent: "#263d31",    // site --accent-dark; used for buttons + emphasis
-  accentMid: "#647862", // site --accent-2; used for the brand rule + sub-accents
+  accent: "#263d31",     // site --accent-dark; used for buttons + emphasis
+  accentMid: "#647862",  // site --accent-2; used for sub-accents
   accentSoft: "#dce5dc",
+  // Dark rail surface mirrored from the website’s left brand block.
+  railBg: "#151b17",     // site --bg-2
+  railText: "#eef1e0",   // site rail body color (cream-on-slate)
+  railLabel: "#9da89b",  // site .rail-label color
+  railRule: "#eef1e51f", // site --slate-line
 };
 
 const fontStack = "'Inria Serif', Iowan Old Style, Georgia, serif";
@@ -87,19 +93,24 @@ export default function PreliminaryEmail({
             color: palette.ink,
           }}
         >
-          {/* Brand mast — sits above the main panel so a recipient
-              recognizes the sender immediately, before any framing prose. */}
-          {/* Brand mast — same STUDY / Threshold block the website uses in
-              its left rail, so the recipient recognizes the sender from
-              the same wordmark. Sage rule below echoes the site’s accent-
-              line treatment. */}
-          <Section style={{ padding: "0 0 8px" }}>
+          {/* Brand mast — dark slate panel mirroring the website’s left
+              rail. Same STUDY label + Threshold wordmark + slate body color
+              the recipient sees on mayliveforever.com, so the email reads
+              as the same product, not just a related one. */}
+          <Section
+            style={{
+              backgroundColor: palette.railBg,
+              border: `1px solid ${palette.railRule}`,
+              padding: "22px 24px",
+              marginBottom: 14,
+            }}
+          >
             <Row>
               <Column style={{ verticalAlign: "bottom" as const }}>
                 <Text
                   style={{
                     margin: 0,
-                    color: palette.muted,
+                    color: palette.railLabel,
                     fontFamily: monoStack,
                     fontSize: 10,
                     letterSpacing: "0.18em",
@@ -110,13 +121,13 @@ export default function PreliminaryEmail({
                 </Text>
                 <Text
                   style={{
-                    margin: "4px 0 0",
-                    color: palette.ink,
+                    margin: "6px 0 0",
+                    color: palette.railText,
                     fontFamily: displayStack,
-                    fontSize: 30,
+                    fontSize: 32,
                     fontWeight: 500,
                     lineHeight: 0.95,
-                    letterSpacing: "-0.045em",
+                    letterSpacing: "-0.06em",
                   }}
                 >
                   Threshold
@@ -137,7 +148,7 @@ export default function PreliminaryEmail({
                     fontSize: 10,
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    color: palette.muted,
+                    color: palette.railLabel,
                     textDecoration: "none",
                   }}
                 >
@@ -146,17 +157,6 @@ export default function PreliminaryEmail({
               </Column>
             </Row>
           </Section>
-          {/* Sage accent rule — echoes the site’s --accent-2 separator. */}
-          <Section
-            style={{
-              borderTop: `2px solid ${palette.accentMid}`,
-              borderBottom: `0`,
-              fontSize: 0,
-              lineHeight: 0,
-              padding: 0,
-              margin: "0 0 14px",
-            }}
-          />
           <Section
             style={{
               backgroundColor: palette.panel,
