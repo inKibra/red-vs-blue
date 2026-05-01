@@ -199,10 +199,10 @@ export function CaseStudy() {
       <ColorLegend />
       <Headline data={data} />
       <FrameComparator data={data} />
+      <MidShareCta shareCode={data.viewerShareCode} />
       <LabelComparator data={data} />
       <SecondaryVariations data={data} />
       <ResponsibilityShifter data={data} />
-      <MidShareCta shareCode={data.viewerShareCode} />
       <PredictionVsReality data={data} />
       <CohortTease
         shareCode={data.viewerShareCode}
@@ -1360,8 +1360,8 @@ function MidShareCta({ shareCode }: { shareCode: string | null }) {
       </h3>
       <p className="cs-mid-share-body">
         Send your link to three people. Once they answer, the cohort section
-        below the next two findings unlocks with their version of these
-        same numbers.
+        further down this page unlocks with their version of these same
+        numbers.
       </p>
       <SharePanel
         shareCode={shareCode}
