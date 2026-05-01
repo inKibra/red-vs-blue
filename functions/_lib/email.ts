@@ -2,6 +2,7 @@ import { render } from "@react-email/render";
 import { createElement } from "react";
 import OtcEmail, { type OtcEmailProps } from "./templates/OtcEmail";
 import PreviewLinkEmail, { type PreviewLinkEmailProps } from "./templates/PreviewLinkEmail";
+import PreliminaryEmail, { type PreliminaryEmailProps } from "./templates/PreliminaryEmail";
 import ResultsEmail, { type ResultsEmailProps } from "./templates/ResultsEmail";
 import type { Env } from "./env";
 
@@ -11,24 +12,32 @@ import type { Env } from "./env";
  */
 export type EmailTemplate =
   | { kind: "otc"; props: OtcEmailProps }
-  | { kind: "results"; props: ResultsEmailProps }
-  | { kind: "preview-link"; props: PreviewLinkEmailProps };
+  | { kind: "preliminary"; props: PreliminaryEmailProps }
+  | { kind: "preview-link"; props: PreviewLinkEmailProps }
+  | { kind: "results"; props: ResultsEmailProps };
 
 export type EmailMessage = {
   to: string;
   subject: string;
   template: EmailTemplate;
+  unsubscribeUrl?: string;
 };
 
 async function renderTemplate(
   template: EmailTemplate,
 ): Promise<{ html: string; text: string }> {
-  const element =
-    template.kind === "otc"
-      ? createElement(OtcEmail, template.props)
-      : template.kind === "results"
-        ? createElement(ResultsEmail, template.props)
-        : createElement(PreviewLinkEmail, template.props);
+  const element = (() => {
+    switch (template.kind) {
+      case "otc":
+        return createElement(OtcEmail, template.props);
+      case "preliminary":
+        return createElement(PreliminaryEmail, template.props);
+      case "preview-link":
+        return createElement(PreviewLinkEmail, template.props);
+      case "results":
+        return createElement(ResultsEmail, template.props);
+    }
+  })();
   const [html, text] = await Promise.all([
     render(element),
     render(element, { plainText: true }),
@@ -84,6 +93,14 @@ export async function sendEmail(env: Env, msg: EmailMessage): Promise<string> {
       subject: msg.subject,
       html,
       text,
+      ...(msg.unsubscribeUrl
+        ? {
+            headers: {
+              "List-Unsubscribe": `<${msg.unsubscribeUrl}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            },
+          }
+        : {}),
     }),
   });
 

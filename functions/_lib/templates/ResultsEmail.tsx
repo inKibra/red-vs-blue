@@ -21,6 +21,7 @@ export type ResultsEmailProps = {
   publicThresholdPercent: number;
   dependentThresholdPercent: number;
   resultsUrl: string;
+  unsubscribeUrl: string;
 };
 
 const palette = {
@@ -45,6 +46,7 @@ export default function ResultsEmail({
   publicThresholdPercent,
   dependentThresholdPercent,
   resultsUrl,
+  unsubscribeUrl,
 }: ResultsEmailProps) {
   return (
     <Html>
@@ -160,7 +162,16 @@ export default function ResultsEmail({
             <Hr style={{ borderColor: palette.rule, margin: "28px 0 14px" }} />
             <Text style={{ margin: 0, fontSize: 13, color: palette.muted }}>
               You receive this because you confirmed your email when you
-              responded. We do not send other messages.
+              responded.
+            </Text>
+            <Text style={{ margin: "8px 0 0", fontSize: 12, color: palette.muted }}>
+              <a
+                href={unsubscribeUrl}
+                style={{ color: palette.muted, textDecoration: "underline" }}
+              >
+                Unsubscribe
+              </a>{" "}
+              from all future Threshold Study emails.
             </Text>
           </Section>
         </Container>

@@ -307,3 +307,53 @@ export type CohortResponse = {
   nodes: CohortNode[];
   kAnonThreshold: number;
 };
+
+/**
+ * Public payload powering the /case-study page.
+ *
+ * Reveals condition-stratified percentages so readers can see how each
+ * priming axis shifted answers. Cells with `n < minN` are returned with
+ * `null` percentages — the case study UI renders those as a "too few" note
+ * rather than a misleading point estimate.
+ *
+ * `dataAsOf` is the wall-clock at query time; the page shows it so the
+ * reader knows the snapshot is live, not a frozen press release.
+ */
+export type CaseStudyResponse = {
+  /** ISO 8601; matches the requesting handler's clock. */
+  dataAsOf: string;
+  /** ISO 8601; null until admin publishes the case study itself. */
+  publishedAt: string | null;
+  /** Min cell size below which percentages are suppressed. */
+  minN: number;
+  /** Total submitted responses across all conditions. */
+  totalResponses: number;
+  /** Topline counts for the four 'who is asked' framings. */
+  overall: {
+    personalChoice: ChoiceTotals;
+    publicRecommendation: ChoiceTotals;
+    dependentRecommendation: ChoiceTotals;
+    expectedMajority: ChoiceTotals;
+    averageConfidence: number;
+  };
+  /** Per-condition cells. `pct` is null when n < minN. */
+  byFrame: CaseStudyCell<MechanismFrame>[];
+  bySalience: CaseStudyCell<SalienceCondition>[];
+  byLabelCondition: CaseStudyCell<LabelCondition>[];
+  byOrderCondition: CaseStudyCell<OrderCondition>[];
+};
+
+/**
+ * One condition cell for the case study. Captures the four answer
+ * percentages plus average confidence and denominator. `pct` fields are
+ * null when the cell hasn't reached `minN`.
+ */
+export type CaseStudyCell<K extends string = string> = {
+  key: K;
+  n: number;
+  personalChoiceThresholdPct: number | null;
+  publicRecommendationThresholdPct: number | null;
+  dependentRecommendationThresholdPct: number | null;
+  expectedMajorityThresholdPct: number | null;
+  averageConfidence: number | null;
+};

@@ -4,6 +4,10 @@ import type { RouteContext } from "../../_lib/env";
 import { requireEnv } from "../../_lib/env";
 import { error, json, methodNotAllowed } from "../../_lib/http";
 import { publishResults } from "../../_lib/poll";
+import {
+  signUnsubscribeLink,
+  UNSUBSCRIBE_LINK_TTL_SECONDS,
+} from "../../_lib/unsubscribe-link";
 
 type AggRow = {
   total: number;
@@ -45,7 +49,11 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
 
   const total = agg?.total ?? 0;
   const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 1000) / 10);
-  const props = {
+  const pageOrigin = new URL(ctx.request.url).origin;
+  if (UNSUBSCRIBE_LINK_TTL_SECONDS <= 0) {
+    throw new Error("Unsubscribe link TTL must be positive.");
+  }
+  const sharedProps = {
     totalResponses: total,
     thresholdPercent: pct(agg?.threshold ?? 0),
     safePercent: pct(agg?.safe ?? 0),
@@ -53,7 +61,7 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
     dependentThresholdPercent: pct(agg?.dependent_threshold ?? 0),
     averageConfidence:
       total === 0 ? 0 : Math.round(((agg?.conf_sum ?? 0) / total) * 100) / 100,
-    resultsUrl: `${new URL(ctx.request.url).origin}/results`,
+    resultsUrl: `${pageOrigin}/results`,
   };
 
   // Verified subscribers who haven't received the notification yet.
@@ -62,7 +70,8 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
      FROM responses
      WHERE email IS NOT NULL
        AND email_verified_at IS NOT NULL
-       AND results_email_sent_at IS NULL`,
+       AND results_email_sent_at IS NULL
+       AND unsubscribed_at IS NULL`,
   ).all<SubscriberRow>();
 
   const subscribers = results ?? [];
@@ -70,11 +79,20 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
   let failed = 0;
   for (const s of subscribers) {
     try {
-      await sendEmail(ctx.env, {
+      const token = await signUnsubscribeLink(
+        ctx.env.TOKEN_SECRET,
+        s.token_id,
+        s.email,
+      );
+      const unsubscribeUrl = `${pageOrigin}/unsubscribe?key=${encodeURIComponent(token)}`;
+      const props = { ...sharedProps, unsubscribeUrl };
+      const message = {
         to: s.email,
         subject: "The Threshold Study — results are in",
-        template: { kind: "results", props },
-      });
+        template: { kind: "results" as const, props },
+        unsubscribeUrl,
+      };
+      await sendEmail(ctx.env, message);
       await ctx.env.DB.prepare(
         `UPDATE responses
          SET results_email_sent_at = datetime('now')

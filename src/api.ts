@@ -1,6 +1,7 @@
 import type {
   AnswerRequest,
   AssignResponse,
+  CaseStudyResponse,
   PublicResultsResponse,
   ResultsResponse,
   StatusResponse,
@@ -128,4 +129,9 @@ export async function sendPreviewLink(
   body: PreviewLinkRequest,
 ): Promise<{ ok: true }> {
   return asJson(await postJson("/api/poll/preview-link", body));
+}
+
+/** Fetch the public case-study payload (no auth, 30s edge-cached). */
+export async function getCaseStudyData(): Promise<CaseStudyResponse> {
+  return asJson<CaseStudyResponse>(await fetch("/api/case-study/data"));
 }

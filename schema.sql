@@ -16,6 +16,7 @@ CREATE TABLE poll_settings (
   status                TEXT NOT NULL CHECK (status IN ('open','closed')),
   closes_at             TEXT,
   results_published_at  TEXT,
+  case_study_published_at TEXT,
   created_at            TEXT NOT NULL,
   updated_at            TEXT NOT NULL
 );
@@ -48,6 +49,10 @@ CREATE TABLE responses (
   email_verified_at           TEXT,
   /** True once the published-results notification has been queued for this row. */
   results_email_sent_at       TEXT,
+  /** True once the preliminary-results notification has been queued for this row. */
+  preliminary_email_sent_at   TEXT,
+  /** Set when the recipient unsubscribes; gates ALL future broadcast sends. */
+  unsubscribed_at             TEXT,
   otc_hash                    TEXT,
   otc_expires_at              TEXT,
   otc_attempts                INTEGER NOT NULL DEFAULT 0,
@@ -77,6 +82,7 @@ CREATE INDEX idx_responses_order        ON responses(order_condition);
 
 CREATE UNIQUE INDEX idx_responses_share_code ON responses(share_code);
 CREATE INDEX idx_responses_referrer_id      ON responses(referrer_id);
+CREATE INDEX idx_responses_unsubscribed_at ON responses(unsubscribed_at);
 -- Dev-mode email outbox: when EMAIL_FROM_ADDRESS is unset, the sender stashes
 -- rendered emails here so they can be viewed at /dev/email/:id without DNS.
 CREATE TABLE dev_emails (
