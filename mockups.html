@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Threshold Poll — 9 Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Antonio:wght@400;700&family=Archivo+Black&family=Bagel+Fat+One&family=Big+Shoulders+Display:wght@400;900&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,500&family=Cormorant+Infant:ital,wght@1,300&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Familjen+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;700&family=Inria+Sans:wght@300;700&family=Inria+Serif:ital,wght@0,300;0,700;1,300&family=Italiana&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:opsz,ital,wght@6..72,0,200..800;6..72,1,200..800&family=Playfair+Display:ital,wght@0,400;0,900;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Saira+Stencil+One&family=Special+Elite&family=UnifrakturMaguntia&family=VT323&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   GALLERY CHROME
+   ========================================================== */
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #1a1a1a; }
+body { font-family: "JetBrains Mono", monospace; }
+
+.gallery-head {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px;
+  background: #0a0a0a; color: #f0e9d8;
+  border-bottom: 1px solid #f0e9d822;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.gallery-head a { color: inherit; text-decoration: none; opacity: 0.6; }
+.gallery-head a:hover { opacity: 1; }
+.picker {
+  position: fixed; right: 18px; top: 60px; z-index: 60;
+  display: flex; flex-direction: column; gap: 4px;
+  background: #0a0a0a; padding: 10px 12px;
+  border: 1px solid #f0e9d822; border-radius: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; letter-spacing: 0.12em;
+  color: #f0e9d8;
+}
+.picker a { color: #f0e9d8aa; text-decoration: none; padding: 3px 0; display: block; }
+.picker a:hover { color: #f0e9d8; }
+.picker a strong { color: #f0e9d8; margin-right: 6px; }
+.picker .hint { color: #f0e9d855; font-size: 9.5px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0e9d822; }
+@media (max-width: 720px) { .picker { display: none; } }
+
+.mockup {
+  position: relative;
+  min-height: 100vh;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+.mockup-tag {
+  position: absolute; top: 18px; left: 22px; z-index: 5;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+}
+
+/* ==========================================================
+   1. CONSTRUCTIVIST MANIFESTO
+   ========================================================== */
+.m1 { background: #efe6d2; color: #0c0c0c; }
+.m1 .mockup-tag { background: #d3232f; color: #efe6d2; }
+.m1 .frame { position: relative; padding: 80px 64px 48px; max-width: 1180px; margin: 0 auto; min-height: 100vh; }
+.m1 .frame::before {
+  content: ""; position: absolute; left: -120px; top: 60px;
+  width: 360px; height: 360px; background: #d3232f; border-radius: 50%;
+  z-index: 0; opacity: 0.95;
+}
+.m1 .frame::after {
+  content: ""; position: absolute; right: 80px; top: 380px;
+  width: 200px; height: 200px; background: #0c0c0c;
+  z-index: 0; transform: rotate(8deg);
+}
+.m1 .num {
+  position: relative; z-index: 2;
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 900; font-size: 320px; line-height: 0.8;
+  color: #0c0c0c; letter-spacing: -0.04em;
+  transform: rotate(-6deg) translateX(-8px);
+  display: inline-block;
+  text-shadow: 6px 6px 0 #d3232f;
+}
+.m1 .diagonal {
+  position: absolute; top: 90px; right: 80px; z-index: 3;
+  font-family: "Archivo Black", sans-serif; font-size: 22px;
+  letter-spacing: 0.04em; color: #0c0c0c;
+  transform: rotate(-90deg); transform-origin: right top;
+  white-space: nowrap;
+}
+.m1 .head {
+  position: relative; z-index: 2;
+  font-family: "Archivo Black", sans-serif;
+  font-size: 60px; line-height: 0.95;
+  letter-spacing: -0.02em; text-transform: uppercase;
+  margin: -40px 0 24px; max-width: 14ch;
+}
+.m1 .head em { color: #d3232f; font-style: normal; }
+.m1 .body {
+  position: relative; z-index: 2;
+  font-family: "PT Serif", serif; font-size: 18px; line-height: 1.5;
+  max-width: 56ch; margin: 0 0 36px;
+}
+.m1 .question {
+  position: relative; z-index: 2;
+  font-family: "Archivo Black", sans-serif; font-size: 28px;
+  text-transform: uppercase; letter-spacing: 0.01em;
+  border-top: 6px solid #0c0c0c; padding-top: 18px; margin-bottom: 22px;
+  max-width: 26ch;
+}
+.m1 .row { position: relative; z-index: 2; display: flex; gap: 20px; flex-wrap: wrap; }
+.m1 .btn {
+  font-family: "Archivo Black", sans-serif; font-size: 36px;
+  text-transform: uppercase; letter-spacing: 0.02em;
+  padding: 26px 44px; border: 4px solid #0c0c0c;
+  background: #efe6d2; color: #0c0c0c; cursor: pointer;
+  box-shadow: 8px 8px 0 #0c0c0c; transition: all 120ms ease;
+}
+.m1 .btn:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0 #0c0c0c; }
+.m1 .btn.red { background: #d3232f; color: #efe6d2; }
+.m1 .btn.blue { background: #0c0c0c; color: #efe6d2; }
+
+/* ==========================================================
+   2. CIVIL DEFENSE BULLETIN
+   ========================================================== */
+.m2 { background: #f7d614; color: #0a0a0a; }
+.m2 .mockup-tag { background: #0a0a0a; color: #f7d614; }
+.m2 .hazard {
+  height: 28px;
+  background: repeating-linear-gradient(135deg,
+    #0a0a0a 0 24px, #f7d614 24px 48px);
+}
+.m2 .frame { padding: 36px 48px 56px; max-width: 940px; margin: 0 auto; }
+.m2 .stamp {
+  border: 4px double #0a0a0a; padding: 10px 14px;
+  display: inline-block; transform: rotate(-3deg);
+  font-family: "Saira Stencil One", sans-serif; font-size: 14px;
+  letter-spacing: 0.1em; margin-bottom: 24px;
+}
+.m2 .id-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: "Special Elite", monospace; font-size: 12px;
+  letter-spacing: 0.04em; padding-bottom: 8px;
+  border-bottom: 2px solid #0a0a0a; margin-bottom: 18px;
+}
+.m2 .head {
+  font-family: "Saira Stencil One", sans-serif;
+  font-size: 78px; line-height: 0.95; letter-spacing: -0.01em;
+  text-transform: uppercase; margin: 0 0 18px;
+}
+.m2 .body {
+  font-family: "Special Elite", monospace; font-size: 17px; line-height: 1.6;
+  max-width: 60ch; margin: 0 0 28px; column-count: 1;
+}
+.m2 .body strong { background: #0a0a0a; color: #f7d614; padding: 1px 6px; }
+.m2 .question {
+  font-family: "Saira Stencil One", sans-serif; font-size: 26px;
+  text-transform: uppercase;
+  border-top: 4px double #0a0a0a; border-bottom: 4px double #0a0a0a;
+  padding: 14px 0; margin: 28px 0;
+}
+.m2 .row { display: flex; gap: 18px; flex-wrap: wrap; }
+.m2 .btn {
+  flex: 1 1 220px;
+  font-family: "Saira Stencil One", sans-serif; font-size: 36px;
+  padding: 22px 28px; border: 3px solid #0a0a0a;
+  background: #0a0a0a; color: #f7d614; cursor: pointer;
+  letter-spacing: 0.06em;
+}
+.m2 .btn.red { color: #ff5a3c; }
+.m2 .btn.blue { color: #6fcfff; }
+.m2 .footer-hazard {
+  position: absolute; bottom: 0; left: 0; right: 0;
+}
+
+/* ==========================================================
+   3. BROADSHEET
+   ========================================================== */
+.m3 { background: #f0e6d0; color: #1a160e; }
+.m3 .mockup-tag { background: #1a160e; color: #f0e6d0; }
+.m3 .frame {
+  padding: 56px 72px 56px;
+  max-width: 920px; margin: 0 auto;
+  background-image: radial-gradient(circle at 30% 20%, transparent 0, #00000008 60%);
+}
+.m3 .masthead {
+  text-align: center; padding-bottom: 14px;
+  border-bottom: 4px double #1a160e;
+}
+.m3 .masthead .name {
+  font-family: "UnifrakturMaguntia", serif; font-size: 76px; line-height: 1;
+  letter-spacing: -0.01em; margin: 0;
+}
+.m3 .masthead .name em { font-style: normal; color: #8a1f12; }
+.m3 .masthead .sub {
+  font-family: "Playfair Display", serif; font-style: italic;
+  font-size: 14px; letter-spacing: 0.08em; margin-top: 8px;
+  text-transform: uppercase;
+}
+.m3 .vol {
+  display: flex; justify-content: space-between;
+  font-family: "PT Serif", serif; font-size: 12px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 8px 0; border-bottom: 1px solid #1a160e;
+  margin-bottom: 28px;
+}
+.m3 .head {
+  font-family: "Playfair Display", serif; font-weight: 900;
+  font-size: 64px; line-height: 1.02; letter-spacing: -0.01em;
+  text-align: center; margin: 0 0 8px;
+}
+.m3 .deck {
+  font-family: "Playfair Display", serif; font-style: italic;
+  font-size: 21px; line-height: 1.4; text-align: center;
+  color: #1a160ecc; margin: 0 0 28px; max-width: 50ch; margin-left: auto; margin-right: auto;
+}
+.m3 .body {
+  font-family: "PT Serif", serif; font-size: 17px; line-height: 1.6;
+  text-align: justify; hyphens: auto;
+  column-count: 2; column-gap: 36px; column-rule: 1px solid #1a160e33;
+  margin-bottom: 32px;
+}
+.m3 .body::first-letter {
+  font-family: "Playfair Display", serif; font-weight: 900;
+  font-size: 76px; line-height: 0.85; float: left;
+  margin: 6px 8px 0 0; color: #8a1f12;
+}
+.m3 .question {
+  text-align: center;
+  font-family: "Playfair Display", serif; font-style: italic;
+  font-size: 28px; padding: 20px 0;
+  border-top: 1px solid #1a160e; border-bottom: 1px solid #1a160e;
+  margin-bottom: 24px;
+}
+.m3 .row { display: flex; gap: 20px; justify-content: center; }
+.m3 .btn {
+  font-family: "Playfair Display", serif; font-variant: small-caps;
+  font-size: 26px; letter-spacing: 0.06em;
+  padding: 16px 36px; background: #f0e6d0; color: #1a160e;
+  border: 1px solid #1a160e;
+  box-shadow: inset 0 0 0 4px #f0e6d0, inset 0 0 0 5px #1a160e;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   4. ZEN HAIRLINE
+   ========================================================== */
+.m4 { background: #fafaf6; color: #1a1817; }
+.m4 .mockup-tag { background: #1a1817; color: #fafaf6; }
+.m4 .frame {
+  padding: 18vh 8vw 12vh; min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8vw;
+  position: relative;
+}
+.m4 .seal {
+  position: absolute; top: 32px; right: 38px;
+  width: 48px; height: 48px; background: #c8472f;
+  display: flex; align-items: center; justify-content: center;
+  color: #fafaf6;
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 500;
+  font-size: 22px; letter-spacing: -0.02em;
+}
+.m4 .meta {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+  letter-spacing: 0.32em; text-transform: uppercase; color: #1a181766;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  position: absolute; left: 32px; top: 32px; height: 220px;
+}
+.m4 .left { padding-top: 0; }
+.m4 .num {
+  font-family: "Cormorant Garamond", serif; font-style: italic;
+  font-size: 220px; line-height: 0.85; font-weight: 300;
+  color: #c8472f;
+}
+.m4 .body {
+  font-family: "Cormorant Garamond", serif; font-weight: 300;
+  font-size: 22px; line-height: 1.6; color: #1a1817cc;
+  max-width: 38ch;
+}
+.m4 .body em { font-style: italic; color: #1a1817; }
+.m4 .right { display: flex; flex-direction: column; justify-content: center; }
+.m4 .question {
+  font-family: "Cormorant Garamond", serif; font-style: italic;
+  font-weight: 300; font-size: 38px; line-height: 1.2;
+  margin: 0 0 36px; max-width: 22ch;
+}
+.m4 .rule { width: 64px; height: 1px; background: #1a1817; margin: 24px 0; }
+.m4 .row { display: flex; gap: 36px; }
+.m4 .btn {
+  font-family: "Cormorant Garamond", serif; font-style: italic;
+  font-weight: 300; font-size: 30px;
+  background: transparent; border: none;
+  border-bottom: 1px solid #1a181755;
+  padding: 8px 4px 4px; color: #1a1817; cursor: pointer;
+  transition: border-color 240ms ease;
+}
+.m4 .btn:hover { border-color: #1a1817; }
+.m4 .btn.red { color: #c8472f; }
+.m4 .btn.blue { color: #2d4a73; }
+
+/* ==========================================================
+   5. PHOSPHOR TERMINAL
+   ========================================================== */
+.m5 { background: #050706; color: #ffb84a; position: relative; }
+.m5 .mockup-tag { background: #ffb84a; color: #050706; }
+.m5 .frame {
+  padding: 64px 48px 56px; max-width: 880px; margin: 0 auto;
+  font-family: "JetBrains Mono", monospace;
+  position: relative; z-index: 2;
+}
+.m5::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+    rgba(255, 184, 74, 0.04) 0 1px,
+    transparent 1px 3px);
+  z-index: 1;
+}
+.m5::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+  z-index: 1;
+}
+.m5 .prompt-line {
+  font-size: 13px; letter-spacing: 0.06em;
+  margin: 0 0 24px; opacity: 0.7;
+}
+.m5 .prompt-line::before { content: "> "; color: #ffb84a; opacity: 1; }
+.m5 .ascii-frame {
+  border: 1px solid #ffb84a55;
+  padding: 28px 32px 32px; margin-bottom: 32px;
+  position: relative;
+}
+.m5 .ascii-frame::before {
+  content: " THRESHOLD :: VOTE ";
+  position: absolute; top: -10px; left: 24px;
+  background: #050706; padding: 0 10px;
+  font-size: 11px; letter-spacing: 0.18em;
+}
+.m5 .head {
+  font-family: "VT323", monospace; font-size: 62px;
+  line-height: 1; letter-spacing: 0.01em; color: #ffd98a;
+  margin: 0 0 16px;
+}
+.m5 .body {
+  font-size: 14.5px; line-height: 1.7; color: #ffb84acc;
+  max-width: 70ch;
+}
+.m5 .body strong { color: #fff5c2; font-weight: 500; }
+.m5 .question {
+  font-family: "VT323", monospace; font-size: 32px;
+  letter-spacing: 0.01em; margin: 24px 0 16px; color: #ffd98a;
+}
+.m5 .row { display: flex; gap: 20px; flex-wrap: wrap; }
+.m5 .btn {
+  flex: 1 1 240px;
+  font-family: "JetBrains Mono", monospace; font-size: 22px; font-weight: 500;
+  padding: 18px 24px; background: transparent;
+  color: #ffb84a; border: 1px solid #ffb84a;
+  cursor: pointer; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 120ms ease;
+}
+.m5 .btn::before { content: "[ "; }
+.m5 .btn::after { content: " ]"; }
+.m5 .btn:hover { background: #ffb84a; color: #050706; }
+.m5 .blink { animation: blink 1s steps(2) infinite; }
+@keyframes blink { to { opacity: 0; } }
+
+/* ==========================================================
+   6. MEMPHIS
+   ========================================================== */
+.m6 { background: #fef6e8; color: #1a1817; overflow: hidden; }
+.m6 .mockup-tag { background: #ff3d8e; color: #fef6e8; }
+.m6 .frame { padding: 60px 56px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 2; }
+.m6 .deco {
+  position: absolute; pointer-events: none; z-index: 1;
+}
+.m6 .deco-1 { top: 60px; right: 80px; width: 140px; height: 140px;
+  border-radius: 50%; background: #ff3d8e; }
+.m6 .deco-2 { top: 220px; right: 250px; width: 80px; height: 80px;
+  background: #f7d614; transform: rotate(15deg); }
+.m6 .deco-3 { bottom: 80px; left: 40px;
+  width: 0; height: 0;
+  border-left: 60px solid transparent; border-right: 60px solid transparent;
+  border-bottom: 100px solid #1ec8c8; transform: rotate(-12deg); }
+.m6 .deco-4 { bottom: 200px; right: 60px; width: 200px; height: 6px;
+  background: repeating-linear-gradient(90deg, #1a1817 0 12px, transparent 12px 20px);
+  transform: rotate(-30deg); }
+.m6 .deco-5 { top: 320px; left: 460px; width: 90px; height: 90px;
+  border: 6px solid #1a1817; border-radius: 50%; }
+.m6 .head {
+  font-family: "Bagel Fat One", serif; font-weight: 400;
+  font-size: 92px; line-height: 0.95; letter-spacing: -0.02em;
+  margin: 60px 0 16px; max-width: 16ch;
+  color: #1a1817;
+}
+.m6 .head em { color: #ff3d8e; font-style: normal; }
+.m6 .body {
+  font-family: "Familjen Grotesk", sans-serif; font-size: 17px; line-height: 1.55;
+  max-width: 56ch; margin: 0 0 32px;
+  background: #1a1817; color: #fef6e8;
+  padding: 18px 22px; border-radius: 4px;
+  transform: rotate(-1deg);
+}
+.m6 .question {
+  font-family: "Bagel Fat One", serif;
+  font-size: 36px; line-height: 1.1; letter-spacing: -0.01em;
+  margin: 0 0 22px; max-width: 22ch;
+}
+.m6 .row { display: flex; gap: 18px; flex-wrap: wrap; position: relative; z-index: 3; }
+.m6 .btn {
+  font-family: "Bagel Fat One", serif; font-size: 38px;
+  padding: 20px 40px; border: 4px solid #1a1817;
+  cursor: pointer; border-radius: 4px;
+  box-shadow: 6px 6px 0 #1a1817; transition: all 120ms ease;
+  letter-spacing: 0.01em;
+}
+.m6 .btn:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0 #1a1817; }
+.m6 .btn.red { background: #ff3d8e; color: #fef6e8; }
+.m6 .btn.blue { background: #1ec8c8; color: #1a1817; }
+
+/* ==========================================================
+   7. SOFT LUXURY (A24-ESQUE)
+   ========================================================== */
+.m7 { background: #f5f3ed; color: #18130d; }
+.m7 .mockup-tag { background: #18130d; color: #f5f3ed; }
+.m7 .frame {
+  padding: 14vh 8vw 12vh; max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.8fr; gap: 8vw;
+  align-items: start;
+}
+.m7 .left {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: #18130d99;
+  display: grid; gap: 36px;
+}
+.m7 .left .role { color: #18130d; }
+.m7 .head {
+  font-family: "Italiana", serif; font-weight: 400;
+  font-size: clamp(72px, 9vw, 132px); line-height: 0.92;
+  letter-spacing: -0.025em; margin: 0 0 32px;
+}
+.m7 .head em { font-family: "Cormorant Infant", serif; font-style: italic; font-weight: 300; color: #8a1f12; }
+.m7 .body {
+  font-family: "Cormorant Garamond", serif; font-weight: 300;
+  font-style: italic;
+  font-size: 21px; line-height: 1.55;
+  max-width: 46ch; color: #18130dcc; margin: 0 0 56px;
+}
+.m7 .question {
+  font-family: "Italiana", serif;
+  font-size: clamp(28px, 3.6vw, 44px); line-height: 1.1;
+  letter-spacing: -0.01em; margin: 0 0 28px; max-width: 26ch;
+}
+.m7 .row { display: flex; gap: 56px; align-items: baseline; }
+.m7 .btn {
+  background: transparent; border: none; padding: 0;
+  cursor: pointer; color: #18130d;
+  font-family: "Italiana", serif; font-size: 56px;
+  letter-spacing: -0.015em;
+  position: relative;
+  transition: color 240ms ease;
+}
+.m7 .btn::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+  height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: left; transition: transform 360ms cubic-bezier(0.2,0.8,0.2,1);
+}
+.m7 .btn:hover::after { transform: scaleX(1); }
+.m7 .btn.red { color: #8a1f12; }
+.m7 .btn.blue { color: #1d3461; }
+
+/* ==========================================================
+   8. BAUHAUS
+   ========================================================== */
+.m8 { background: #f2efe6; color: #0a0a0a; overflow: hidden; }
+.m8 .mockup-tag { background: #0a0a0a; color: #f2efe6; }
+.m8 .frame { padding: 48px 56px 64px; max-width: 1200px; margin: 0 auto; position: relative; min-height: 100vh; }
+.m8 .shape { position: absolute; pointer-events: none; }
+.m8 .shape.circle { width: 360px; height: 360px; border-radius: 50%; background: #1e4ed5;
+  bottom: -80px; left: -80px; }
+.m8 .shape.square { width: 220px; height: 220px; background: #e8b81a;
+  top: 80px; right: 64px; }
+.m8 .shape.triangle {
+  width: 0; height: 0;
+  border-left: 80px solid transparent; border-right: 80px solid transparent;
+  border-bottom: 140px solid #d33d29;
+  bottom: 200px; right: 280px; transform: rotate(20deg);
+}
+.m8 .grid-strip {
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 1px; background: #0a0a0a22;
+}
+.m8 .id-row {
+  display: flex; justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace; font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  border-bottom: 2px solid #0a0a0a; padding-bottom: 8px; margin-bottom: 80px;
+  position: relative; z-index: 2;
+}
+.m8 .head {
+  font-family: "Archivo Black", sans-serif; font-weight: 900;
+  font-size: clamp(64px, 8vw, 110px); line-height: 0.92;
+  letter-spacing: -0.025em; text-transform: lowercase;
+  margin: 0 0 24px; max-width: 14ch; position: relative; z-index: 2;
+}
+.m8 .head span { display: block; }
+.m8 .head .a { color: #0a0a0a; }
+.m8 .head .b { color: #d33d29; padding-left: 1.6em; }
+.m8 .head .c { color: #1e4ed5; padding-left: 0.4em; }
+.m8 .body {
+  font-family: "IBM Plex Sans", sans-serif; font-weight: 300;
+  font-size: 18px; line-height: 1.55;
+  max-width: 56ch; color: #0a0a0acc; margin: 0 0 48px;
+  position: relative; z-index: 2;
+}
+.m8 .question {
+  font-family: "IBM Plex Sans", sans-serif; font-weight: 700;
+  font-size: 22px; letter-spacing: 0.01em; line-height: 1.3;
+  margin: 0 0 28px; max-width: 30ch;
+  position: relative; z-index: 2;
+}
+.m8 .row { display: flex; gap: 32px; position: relative; z-index: 2; }
+.m8 .btn {
+  width: 180px; height: 180px; border-radius: 50%;
+  border: none; cursor: pointer;
+  font-family: "Archivo Black", sans-serif; font-size: 32px;
+  text-transform: lowercase; letter-spacing: -0.01em;
+  color: #f2efe6; transition: transform 200ms ease;
+}
+.m8 .btn:hover { transform: scale(1.06); }
+.m8 .btn.red { background: #d33d29; }
+.m8 .btn.blue { background: #1e4ed5; }
+
+/* ==========================================================
+   9. BLUEPRINT
+   ========================================================== */
+.m9 { background: #0d2a4f; color: #f4f0e1; }
+.m9 .mockup-tag { background: #f4f0e1; color: #0d2a4f; }
+.m9 .frame {
+  padding: 56px 64px; max-width: 1100px; margin: 0 auto; position: relative;
+  background-image:
+    linear-gradient(to right, #f4f0e114 1px, transparent 1px),
+    linear-gradient(to bottom, #f4f0e114 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: 0 0;
+  min-height: 100vh;
+}
+.m9 .frame::before, .m9 .frame::after {
+  content: ""; position: absolute; width: 18px; height: 18px;
+  border: 1px solid #f4f0e1; border-radius: 50%;
+}
+.m9 .frame::before { top: 32px; left: 32px; }
+.m9 .frame::after { top: 32px; right: 32px; }
+.m9 .titleblock {
+  border-top: 1px solid #f4f0e1; border-bottom: 1px solid #f4f0e1;
+  display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0; align-items: stretch;
+  font-family: "JetBrains Mono", monospace; font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin: 24px 0 56px;
+}
+.m9 .titleblock > div { padding: 10px 14px; }
+.m9 .titleblock > .sep {
+  background: #f4f0e1; width: 1px; padding: 0;
+}
+.m9 .titleblock .key { color: #f4f0e177; display: block; font-size: 9.5px; margin-bottom: 4px; }
+.m9 .head {
+  font-family: "Inria Serif", serif; font-weight: 300;
+  font-size: clamp(56px, 7vw, 96px); line-height: 0.95;
+  letter-spacing: -0.015em; margin: 0 0 24px; max-width: 18ch;
+}
+.m9 .head em { font-style: italic; color: #f7c873; }
+.m9 .body {
+  font-family: "Inria Sans", sans-serif; font-weight: 300;
+  font-size: 17px; line-height: 1.6;
+  max-width: 58ch; margin: 0 0 36px; color: #f4f0e1cc;
+}
+.m9 .body strong { font-weight: 700; color: #f4f0e1; }
+.m9 .annotation {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #f4f0e188; margin: 0 0 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.m9 .annotation::before, .m9 .annotation::after {
+  content: ""; flex: 1; height: 1px; background: #f4f0e133;
+}
+.m9 .question {
+  font-family: "Inria Serif", serif; font-style: italic;
+  font-size: 28px; line-height: 1.2; margin: 0 0 28px; max-width: 28ch;
+}
+.m9 .row { display: flex; gap: 24px; flex-wrap: wrap; }
+.m9 .btn {
+  position: relative;
+  flex: 1 1 240px;
+  font-family: "JetBrains Mono", monospace; font-size: 22px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 22px 28px; background: transparent; color: #f4f0e1;
+  border: 1px solid #f4f0e1; cursor: pointer;
+}
+.m9 .btn::before, .m9 .btn::after {
+  content: ""; position: absolute; width: 10px; height: 10px;
+  border: 1px solid #f4f0e1;
+}
+.m9 .btn::before { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+.m9 .btn::after { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+.m9 .btn:hover { background: #f4f0e1; color: #0d2a4f; }
+.m9 .btn.red span { color: #ff7a59; }
+.m9 .btn.blue span { color: #7ec8ff; }
+
+</style>
+</head>
+
+<body>
+
+<div class="gallery-head">
+  <span>The Threshold · Aesthetic Mockups · 9 directions</span>
+  <span>Reply with a number to lock one in</span>
+</div>
+
+<aside class="picker">
+  <a href="#m1"><strong>1</strong> Constructivist</a>
+  <a href="#m2"><strong>2</strong> Civil Defense</a>
+  <a href="#m3"><strong>3</strong> Broadsheet</a>
+  <a href="#m4"><strong>4</strong> Zen Hairline</a>
+  <a href="#m5"><strong>5</strong> Phosphor</a>
+  <a href="#m6"><strong>6</strong> Memphis</a>
+  <a href="#m7"><strong>7</strong> Soft Luxury</a>
+  <a href="#m8"><strong>8</strong> Bauhaus</a>
+  <a href="#m9"><strong>9</strong> Blueprint</a>
+  <div class="hint">Same content<br/>9 directions</div>
+</aside>
+
+<!-- ============================== 1 CONSTRUCTIVIST ============================== -->
+<section class="mockup m1" id="m1">
+  <span class="mockup-tag">01 / Constructivist Manifesto</span>
+  <div class="frame">
+    <span class="diagonal">PRESS · CHOOSE · SURVIVE</span>
+    <div class="num">I</div>
+    <h1 class="head">Everyone votes. <em>Most</em> of us live.</h1>
+    <p class="body">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p>
+    <div class="question">Which button would <em>you</em>, personally, press?</div>
+    <div class="row">
+      <button class="btn red">Red</button>
+      <button class="btn blue">Blue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 2 CIVIL DEFENSE ============================== -->
+<section class="mockup m2" id="m2">
+  <span class="mockup-tag">02 / Civil Defense Bulletin</span>
+  <div class="hazard"></div>
+  <div class="frame">
+    <span class="stamp">DIRECTIVE 7-A · CONFIDENTIAL</span>
+    <div class="id-row">
+      <span>BULLETIN 1977-Q4</span>
+      <span>FILE: THRESHOLD-V</span>
+      <span>DISTRIBUTION: ALL CITIZENS</span>
+    </div>
+    <h1 class="head">In the event of<br/>a coordination test</h1>
+    <p class="body">Everyone in the world will take a private vote by pressing a red or blue button. <strong>If more than 50% press blue, everyone survives.</strong> If blue fails to clear the threshold, only those who pressed red will survive.</p>
+    <div class="question">Personal Selection — Required</div>
+    <div class="row">
+      <button class="btn red">▲ RED</button>
+      <button class="btn blue">▼ BLUE</button>
+    </div>
+  </div>
+  <div class="footer-hazard hazard"></div>
+</section>
+
+<!-- ============================== 3 BROADSHEET ============================== -->
+<section class="mockup m3" id="m3">
+  <span class="mockup-tag">03 / Broadsheet</span>
+  <div class="frame">
+    <header class="masthead">
+      <h1 class="name">The <em>Threshold</em> Gazette</h1>
+      <div class="sub">Established this morning · Published once · Read carefully</div>
+    </header>
+    <div class="vol">
+      <span>Vol. I — No. I</span>
+      <span>An Inquiry into Coordination</span>
+      <span>One Vote, One Voice</span>
+    </div>
+    <h1 class="head">A Question of Buttons</h1>
+    <p class="deck">In which the reader is asked to imagine a vote upon which all life depends, and to record their honest answer.</p>
+    <div class="body">
+      Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only those who pressed the red button survive. The vote is anonymous; no one will know what you chose; the only consequence is the consequence itself. Consider the question carefully, and then commit.
+    </div>
+    <div class="question">Which button would you, personally, press?</div>
+    <div class="row">
+      <button class="btn">Red</button>
+      <button class="btn">Blue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 4 ZEN HAIRLINE ============================== -->
+<section class="mockup m4" id="m4">
+  <span class="mockup-tag">04 / Zen Hairline</span>
+  <div class="frame">
+    <div class="seal">票</div>
+    <div class="meta">Question One · Of Five</div>
+    <div class="left">
+      <div class="num">i</div>
+      <p class="body"><em>Everyone</em> presses a button. If <em>most</em> press blue, all survive. Otherwise only red voters survive.</p>
+    </div>
+    <div class="right">
+      <h1 class="question">Which would <em>you</em> press?</h1>
+      <div class="rule"></div>
+      <div class="row">
+        <button class="btn red">red</button>
+        <button class="btn blue">blue</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 5 PHOSPHOR ============================== -->
+<section class="mockup m5" id="m5">
+  <span class="mockup-tag">05 / Phosphor Terminal</span>
+  <div class="frame">
+    <div class="prompt-line">SESSION 0xA47F · NODE 01 · ASSIGNMENT RECEIVED</div>
+    <div class="ascii-frame">
+      <h1 class="head">QUERY :: PERSONAL_VOTE</h1>
+      <p class="body">Everyone in the world casts a private vote by pressing a red or blue button. <strong>IF</strong> more than 50% press blue, all citizens survive. <strong>ELSE</strong> only those who pressed red survive. No retries. No spectators.</p>
+      <div class="question">// awaiting input<span class="blink">_</span></div>
+      <div class="row">
+        <button class="btn">RED</button>
+        <button class="btn">BLUE</button>
+      </div>
+    </div>
+    <div class="prompt-line">PRESS A KEY TO COMMIT — NO UNDO</div>
+  </div>
+</section>
+
+<!-- ============================== 6 MEMPHIS ============================== -->
+<section class="mockup m6" id="m6">
+  <span class="mockup-tag">06 / Memphis</span>
+  <div class="deco deco-1"></div>
+  <div class="deco deco-2"></div>
+  <div class="deco deco-3"></div>
+  <div class="deco deco-4"></div>
+  <div class="deco deco-5"></div>
+  <div class="frame">
+    <h1 class="head">Press one. <em>Live or die.</em></h1>
+    <p class="body">Everyone in the world presses a red or blue button. If more than 50% press blue, all survive. If not, only red voters survive. The vote is private. There is no take-back.</p>
+    <div class="question">Which would you press?</div>
+    <div class="row">
+      <button class="btn red">Red</button>
+      <button class="btn blue">Blue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 7 SOFT LUXURY ============================== -->
+<section class="mockup m7" id="m7">
+  <span class="mockup-tag">07 / Soft Luxury</span>
+  <div class="frame">
+    <aside class="left">
+      <div><div class="role">Question</div>I of V</div>
+      <div><div class="role">Premise</div>A coordination test.<br/>One private vote.</div>
+      <div><div class="role">Stake</div>Survival</div>
+      <div><div class="role">Recourse</div>None</div>
+    </aside>
+    <div>
+      <h1 class="head">A vote, <em>privately</em>,<br/>upon which we all depend.</h1>
+      <p class="body">Everyone in the world presses a red or blue button. If more than half press blue, every person survives. Should blue fall short, only those who pressed red remain. The result is total, the vote is private, and there is no second round.</p>
+      <h2 class="question">Which would you, personally, press?</h2>
+      <div class="row">
+        <button class="btn red">Red</button>
+        <button class="btn blue">Blue</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 8 BAUHAUS ============================== -->
+<section class="mockup m8" id="m8">
+  <span class="mockup-tag">08 / Bauhaus</span>
+  <div class="frame">
+    <div class="shape circle"></div>
+    <div class="shape square"></div>
+    <div class="shape triangle"></div>
+    <div class="grid-strip"></div>
+    <div class="id-row">
+      <span>question 01 / 05</span>
+      <span>form follows function</span>
+      <span>private — anonymous</span>
+    </div>
+    <h1 class="head">
+      <span class="a">a vote</span>
+      <span class="b">a threshold</span>
+      <span class="c">a survival</span>
+    </h1>
+    <p class="body">Everyone in the world presses a red or blue button. If more than 50% of people press the blue button, everyone survives. If blue fails to clear the threshold, only those who pressed red survive.</p>
+    <h2 class="question">Which button would you, personally, press?</h2>
+    <div class="row">
+      <button class="btn red">red</button>
+      <button class="btn blue">blue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 9 BLUEPRINT ============================== -->
+<section class="mockup m9" id="m9">
+  <span class="mockup-tag">09 / Blueprint</span>
+  <div class="frame">
+    <div class="titleblock">
+      <div><span class="key">drawing</span>THRESHOLD-01</div>
+      <div class="sep"></div>
+      <div><span class="key">scale</span>1 : 1</div>
+      <div class="sep"></div>
+      <div><span class="key">section</span>I / V — personal</div>
+    </div>
+    <h1 class="head">A coordination problem, drawn <em>to scale</em>.</h1>
+    <p class="body">Everyone in the world casts a private vote. <strong>If more than 50% press blue, all survive.</strong> Otherwise, only red voters remain. No revision. No collusion. No spectators.</p>
+    <div class="annotation">— input required —</div>
+    <h2 class="question">Which button would <em>you</em> press?</h2>
+    <div class="row">
+      <button class="btn"><span>●</span>&nbsp;&nbsp;RED</button>
+      <button class="btn"><span>●</span>&nbsp;&nbsp;BLUE</button>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

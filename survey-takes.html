@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Threshold Study — Survey Takes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;1,400&family=Alegreya+Sans:wght@300;400;500;700&family=Assistant:wght@300;400;500;700&family=Castoro:ital@0;1&family=Chivo:wght@300;400;500;700&family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Inria+Sans:wght@300;400;700&family=Inria+Serif:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500;700&family=Literata:opsz,wght@7..72,300..700&family=Public+Sans:wght@300;400;500;700&family=Spectral:ital,wght@0,300;0,400;0,500;1,300&family=Spline+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #171817; color: #f7f4ea; }
+body { font-family: "JetBrains Mono", monospace; }
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; justify-content: space-between; gap: 24px; align-items: center;
+  padding: 13px 20px; background: #101110; border-bottom: 1px solid #f7f4ea22;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+}
+.nav .links { display: flex; gap: 12px; flex-wrap: wrap; }
+.nav a { color: #f7f4eaaa; text-decoration: none; }
+.nav a:hover { color: #f7f4ea; }
+.take { min-height: 100vh; position: relative; overflow: hidden; isolation: isolate; }
+.badge {
+  position: absolute; z-index: 5; top: 20px; left: 22px;
+  font: 500 10px/1 "JetBrains Mono", monospace;
+  letter-spacing: .17em; text-transform: uppercase;
+  padding: 6px 9px; border: 1px solid currentColor;
+}
+.prompt { margin: 0; }
+.choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choice {
+  border: 1px solid currentColor; background: transparent; color: inherit;
+  cursor: pointer; text-align: left; transition: transform .14s ease, background .14s ease, color .14s ease, border-color .14s ease;
+}
+.choice:hover { transform: translateY(-1px); }
+.choice:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+@media (max-width: 720px) { .choice-row { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------------
+   1. SWISS INSTRUMENT
+   ------------------------------------------------------------------ */
+.t1 { background: #f2f0e9; color: #191b18; font-family: "Public Sans", sans-serif; }
+.t1 .badge { color: #38483e; background: #f2f0e9; }
+.t1 .wrap { width: min(1080px, calc(100vw - 42px)); margin: 0 auto; padding: 82px 0 64px; }
+.t1 .grid {
+  display: grid; grid-template-columns: 180px 1fr; min-height: 720px;
+  border: 1px solid #191b1850; background: #fbfaf4;
+}
+.t1 aside { border-right: 1px solid #191b1828; padding: 24px; }
+.t1 aside .k { font: 500 10px/1.4 "IBM Plex Mono"; letter-spacing: .17em; text-transform: uppercase; color: #6b6d65; margin-bottom: 42px; }
+.t1 aside .n { font: 300 86px/0.85 "Public Sans"; letter-spacing: -.07em; color: #38483e; }
+.t1 main { padding: clamp(32px, 6vw, 78px); }
+.t1 .meta { font: 500 10px/1.4 "IBM Plex Mono"; letter-spacing: .18em; text-transform: uppercase; color: #6b6d65; margin-bottom: 16px; }
+.t1 h1 { margin: 0 0 24px; max-width: 16ch; font: 300 clamp(42px, 6vw, 74px)/.95 "Public Sans"; letter-spacing: -.06em; }
+.t1 .prompt { max-width: 62ch; font: 300 18px/1.58 "Public Sans"; color: #363832; margin-bottom: 44px; }
+.t1 .question { font: 500 18px/1.3 "Public Sans"; margin-bottom: 14px; }
+.t1 .choice { padding: 22px 24px; color: #191b18; border-color: #191b1855; background: #fffef8; }
+.t1 .choice:hover { border-color: #38483e; background: #eef2ee; }
+.t1 .choice span { display:block; font: 300 34px/1 "Public Sans"; letter-spacing: -.04em; margin-bottom: 10px; }
+.t1 .choice small { font: 500 10px/1 "IBM Plex Mono"; letter-spacing: .16em; text-transform: uppercase; color: #77786c; }
+
+/* ------------------------------------------------------------------
+   2. QUIET ETHICS BOARD
+   ------------------------------------------------------------------ */
+.t2 { background: #efebe2; color: #25221e; font-family: "Literata", serif; }
+.t2::before { content:""; position:absolute; inset:0; background: radial-gradient(circle at 20% 12%, #fff9, transparent 34%), radial-gradient(circle at 90% 80%, #5d735d20, transparent 42%); z-index:-1; }
+.t2 .badge { color: #5a6d59; background: #efebe2; }
+.t2 .wrap { width: min(940px, calc(100vw - 36px)); margin: 0 auto; padding: 92px 0; }
+.t2 .panel { background: #faf8f0; border: 1px solid #25221e33; box-shadow: 0 28px 80px #25221e10; padding: clamp(30px, 6vw, 70px); }
+.t2 .topline { display:flex; justify-content:space-between; gap:20px; border-bottom:1px solid #25221e22; padding-bottom:14px; margin-bottom:44px; font: 500 10px/1.5 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#737064; }
+.t2 h1 { margin:0 0 28px; max-width:18ch; font: 300 clamp(40px, 6vw, 68px)/1.02 "Literata"; letter-spacing:-.035em; color:#25221e; }
+.t2 .prompt { max-width:66ch; margin-bottom:38px; color:#3e3b35; font-size:18px; line-height:1.68; }
+.t2 .question { margin:0 0 16px; font: 500 15px/1.4 "IBM Plex Mono"; letter-spacing:.13em; text-transform:uppercase; color:#5a6d59; }
+.t2 .choice-row { max-width:700px; }
+.t2 .choice { padding:20px 22px; background:#fffdf6; border-color:#25221e3f; }
+.t2 .choice:hover { background:#f2f5ef; border-color:#5a6d59; }
+.t2 .choice span { font: 400 32px/1.1 "Literata"; letter-spacing:-.02em; }
+.t2 .choice small { display:block; margin-top:12px; font: 500 10px/1 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#77736a; }
+
+/* ------------------------------------------------------------------
+   3. FIELD NOTEBOOK
+   ------------------------------------------------------------------ */
+.t3 { background:#e8e2d0; color:#1d1f19; font-family:"Alegreya", serif; }
+.t3::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(0deg, transparent 0 31px, #1d1f1912 31px 32px), linear-gradient(90deg, transparent 0 96px, #7b4f391f 96px 97px, transparent 97px); z-index:-1; }
+.t3 .badge { color:#4f684e; background:#e8e2d0; }
+.t3 .wrap { width:min(980px, calc(100vw - 36px)); margin:0 auto; padding:86px 0 70px; }
+.t3 .header { display:grid; grid-template-columns: 120px 1fr; gap:30px; align-items:start; margin-bottom:38px; }
+.t3 .specimen { width:96px; height:96px; border:1px solid #1d1f1944; border-radius:50%; display:grid; place-items:center; font:400 46px/1 "Alegreya"; color:#4f684e; background:#f6f1e3; }
+.t3 .meta { font:700 10px/1.5 "Alegreya Sans"; letter-spacing:.18em; text-transform:uppercase; color:#6d6b60; margin-bottom:10px; }
+.t3 h1 { margin:0; max-width:16ch; font:400 clamp(44px, 7vw, 78px)/.95 "Alegreya"; letter-spacing:-.045em; }
+.t3 .prompt { max-width:63ch; margin:0 0 38px 150px; font-size:21px; line-height:1.55; color:#33342e; }
+.t3 .question-area { margin-left:150px; max-width:720px; }
+.t3 .question { font:700 13px/1.4 "Alegreya Sans"; letter-spacing:.14em; text-transform:uppercase; color:#4f684e; margin-bottom:14px; }
+.t3 .choice { padding:22px 24px; background:#f6f1e3; border-color:#1d1f1944; }
+.t3 .choice:hover { background:#eef0e5; border-color:#4f684e; }
+.t3 .choice span { font:400 36px/1 "Alegreya"; }
+.t3 .choice small { display:block; margin-top:10px; font:700 10px/1 "Alegreya Sans"; letter-spacing:.16em; text-transform:uppercase; color:#6d6b60; }
+@media(max-width:760px){ .t3 .prompt,.t3 .question-area{margin-left:0;} .t3 .header{grid-template-columns:1fr;} }
+
+/* ------------------------------------------------------------------
+   4. SLATE OBSERVATORY
+   ------------------------------------------------------------------ */
+.t4 { background:#121714; color:#e8eadf; font-family:"Spline Sans", sans-serif; }
+.t4::before { content:""; position:absolute; inset:0; background: radial-gradient(circle at 70% 18%, #769f7d30, transparent 28%), linear-gradient(to right, #e8eadf0c 1px, transparent 1px), linear-gradient(to bottom, #e8eadf0c 1px, transparent 1px); background-size:auto, 40px 40px, 40px 40px; z-index:-1; }
+.t4 .badge { color:#b9c7b7; background:#121714; }
+.t4 .wrap { width:min(1040px, calc(100vw - 36px)); min-height:100vh; margin:0 auto; display:grid; align-items:center; padding:86px 0; }
+.t4 .panel { border:1px solid #e8eadf33; background:#171d19e8; padding:clamp(28px,5vw,62px); position:relative; }
+.t4 .panel::after { content:""; position:absolute; right:24px; top:24px; width:54px; height:54px; border:1px solid #b9c7b7; border-radius:50%; opacity:.65; }
+.t4 .meta { font:500 10px/1.4 "JetBrains Mono"; letter-spacing:.18em; text-transform:uppercase; color:#b9c7b7; margin-bottom:18px; }
+.t4 h1 { margin:0 0 24px; max-width:17ch; font:300 clamp(42px,6vw,78px)/.96 "Spline Sans"; letter-spacing:-.065em; }
+.t4 .prompt { max-width:64ch; color:#e8eadfcc; font:300 18px/1.62 "Spline Sans"; margin-bottom:40px; }
+.t4 .question { margin-bottom:14px; font:500 12px/1.4 "JetBrains Mono"; letter-spacing:.15em; text-transform:uppercase; color:#b9c7b7; }
+.t4 .choice { padding:22px 24px; background:#101411; border-color:#e8eadf40; }
+.t4 .choice:hover { background:#1f2a22; border-color:#b9c7b7; }
+.t4 .choice span { font:300 38px/1 "Spline Sans"; letter-spacing:-.055em; }
+.t4 .choice small { display:block; margin-top:10px; font:500 10px/1 "JetBrains Mono"; letter-spacing:.16em; text-transform:uppercase; color:#a6ada2; }
+
+/* ------------------------------------------------------------------
+   5. ARCHIVAL CARD CATALOG
+   ------------------------------------------------------------------ */
+.t5 { background:#d9d0bd; color:#242019; font-family:"Castoro", serif; }
+.t5::before { content:""; position:absolute; inset:0; background: radial-gradient(circle at center, transparent, #00000018); z-index:-1; }
+.t5 .badge { color:#242019; background:#d9d0bd; }
+.t5 .wrap { width:min(960px, calc(100vw - 36px)); margin:0 auto; padding:90px 0; }
+.t5 .card { background:#f5ecd9; border:1px solid #24201944; box-shadow: 0 18px 0 #0000000a, 0 38px 80px #00000018; padding:0; }
+.t5 .card-head { display:grid; grid-template-columns:160px 1fr 120px; border-bottom:1px solid #24201955; }
+.t5 .cell { padding:16px 18px; border-right:1px solid #24201933; }
+.t5 .cell:last-child { border-right:0; }
+.t5 .label { display:block; font:500 10px/1 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#756f63; margin-bottom:8px; }
+.t5 .value { font:400 22px/1 "Castoro"; }
+.t5 .body { padding:clamp(28px,5vw,54px); }
+.t5 h1 { margin:0 0 22px; max-width:16ch; font:400 clamp(42px,6vw,70px)/.98 "Castoro"; letter-spacing:-.04em; }
+.t5 .prompt { max-width:66ch; margin-bottom:36px; font-size:18px; line-height:1.66; color:#3b352b; }
+.t5 .question { font:500 10px/1.4 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#756f63; margin-bottom:14px; }
+.t5 .choice { padding:20px 22px; background:#fbf3e2; border-color:#24201955; }
+.t5 .choice:hover { background:#f1eadb; border-color:#242019; }
+.t5 .choice span { font:400 34px/1 "Castoro"; letter-spacing:-.025em; }
+.t5 .choice small { display:block; margin-top:12px; font:500 10px/1 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#756f63; }
+
+/* ------------------------------------------------------------------
+   6. CALM CLINICAL
+   ------------------------------------------------------------------ */
+.t6 { background:#f7f8f3; color:#202421; font-family:"Assistant", sans-serif; }
+.t6::before { content:""; position:absolute; left:0; top:0; bottom:0; width:10px; background:#6e866f; }
+.t6 .badge { color:#6e866f; background:#f7f8f3; }
+.t6 .wrap { width:min(980px, calc(100vw - 36px)); margin:0 auto; padding:92px 0; }
+.t6 .screen { display:grid; grid-template-columns: 1fr 360px; gap:34px; align-items:start; }
+.t6 .main, .t6 .side { background:#ffffff; border:1px solid #20242124; }
+.t6 .main { padding:clamp(28px,5vw,58px); }
+.t6 .side { padding:22px; position:sticky; top:72px; }
+.t6 .meta { font:700 10px/1.4 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#6e866f; margin-bottom:18px; }
+.t6 h1 { margin:0 0 22px; max-width:18ch; font:300 clamp(40px,5.5vw,66px)/1 "Assistant"; letter-spacing:-.055em; }
+.t6 .prompt { max-width:62ch; margin-bottom:34px; font-size:18px; line-height:1.58; color:#3b403b; }
+.t6 .question { font:700 15px/1.35 "Assistant"; margin-bottom:14px; }
+.t6 .choice { padding:18px 20px; background:#fbfcf8; border-color:#20242133; }
+.t6 .choice:hover { background:#edf3ed; border-color:#6e866f; }
+.t6 .choice span { font:300 34px/1 "Assistant"; letter-spacing:-.03em; }
+.t6 .choice small { display:block; margin-top:10px; font:700 10px/1 "IBM Plex Mono"; letter-spacing:.14em; text-transform:uppercase; color:#787d76; }
+.t6 .side h2 { margin:0 0 14px; font:700 10px/1.4 "IBM Plex Mono"; letter-spacing:.16em; text-transform:uppercase; color:#6e866f; }
+.t6 .side p { margin:0 0 12px; font-size:14px; line-height:1.5; color:#525850; }
+.t6 .progress { height:6px; background:#e2e7df; margin-top:22px; }
+.t6 .progress span { display:block; width:20%; height:100%; background:#6e866f; }
+@media(max-width:900px){ .t6 .screen{grid-template-columns:1fr;} .t6 .side{position:static;} }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span>Threshold Study · Six restrained survey directions</span>
+  <span class="links"><a href="#t1">1 Swiss</a><a href="#t2">2 Ethics</a><a href="#t3">3 Field</a><a href="#t4">4 Slate</a><a href="#t5">5 Archive</a><a href="#t6">6 Clinical</a></span>
+</nav>
+
+<section class="take t1" id="t1">
+  <span class="badge">01 · Swiss instrument</span>
+  <div class="wrap"><div class="grid"><aside><div class="k">Anonymous survey<br/>Single response</div><div class="n">I</div></aside><main><div class="meta">Question 01 — Personal choice</div><h1>The Threshold Study</h1><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Select answer</small></button><button class="choice"><span>Blue</span><small>Select answer</small></button></div></main></div></div>
+</section>
+
+<section class="take t2" id="t2">
+  <span class="badge">02 · Quiet ethics board</span>
+  <div class="wrap"><div class="panel"><div class="topline"><span>Study instrument</span><span>Question 01 / 05</span><span>Anonymous</span></div><h1>A private choice in a threshold scenario.</h1><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Commit answer</small></button><button class="choice"><span>Blue</span><small>Commit answer</small></button></div></div></div>
+</section>
+
+<section class="take t3" id="t3">
+  <span class="badge">03 · Field notebook</span>
+  <div class="wrap"><div class="header"><div class="specimen">I</div><div><div class="meta">Response record · personal</div><h1>Threshold field note</h1></div></div><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question-area"><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Select</small></button><button class="choice"><span>Blue</span><small>Select</small></button></div></div></div>
+</section>
+
+<section class="take t4" id="t4">
+  <span class="badge">04 · Slate observatory</span>
+  <div class="wrap"><div class="panel"><div class="meta">Anonymous survey · question 01</div><h1>Observe your first answer.</h1><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Record response</small></button><button class="choice"><span>Blue</span><small>Record response</small></button></div></div></div>
+</section>
+
+<section class="take t5" id="t5">
+  <span class="badge">05 · Archival card catalog</span>
+  <div class="wrap"><div class="card"><div class="card-head"><div class="cell"><span class="label">Card</span><span class="value">01</span></div><div class="cell"><span class="label">Study</span><span class="value">Threshold Poll</span></div><div class="cell"><span class="label">Type</span><span class="value">Choice</span></div></div><div class="body"><h1>Record your response.</h1><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Choose</small></button><button class="choice"><span>Blue</span><small>Choose</small></button></div></div></div></div>
+</section>
+
+<section class="take t6" id="t6">
+  <span class="badge">06 · Calm clinical</span>
+  <div class="wrap"><div class="screen"><main class="main"><div class="meta">Question 01 — Personal choice</div><h1>The Threshold Study</h1><p class="prompt">Everyone in the world has to take a private vote by pressing a red or blue button. If more than 50% of people press the blue button, everyone survives. If the blue button does not clear that threshold, only people who pressed the red button survive.</p><div class="question">Which button would you personally press?</div><div class="choice-row"><button class="choice"><span>Red</span><small>Select response</small></button><button class="choice"><span>Blue</span><small>Select response</small></button></div></main><aside class="side"><h2>Survey status</h2><p>Your response is anonymous. Each answer is recorded once submitted.</p><p>This is question 1 of 5.</p><div class="progress"><span></span></div></aside></div></div>
+</section>
+</body>
+</html>

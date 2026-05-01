@@ -1,0 +1,1578 @@
+/* =====================================================================
+   The Threshold Study
+   Direction: Slate front-and-center + Swiss left rail + Clinical progress.
+
+   Research constraint: red/blue remain text labels only. The UI never colors,
+   weights, sizes, or spatially privileges either displayed answer.
+   ===================================================================== */
+
+:root {
+  --bg: #111613;
+  --bg-2: #151b17;
+  --panel: #f5f2e8;
+  --panel-2: #ece7da;
+  --panel-3: #fffdf5;
+  --ink: #171a16;
+  --ink-2: #3b4039;
+  --muted: #5b6055;     /* WCAG AA: 5.2:1 against --panel, 4.7:1 against --panel-2 */
+  --line: #171a1630;
+  --line-strong: #171a1658;
+  --slate-line: #eef1e51f;
+  --accent: #8fa38d;
+  --accent-2: #647862;
+  --accent-dark: #263d31;
+  --error: #9a614e;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --sans: "Public Sans", "Avenir Next", sans-serif;
+  --display: "Spline Sans", "Public Sans", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background:
+    radial-gradient(circle at 68% 14%, #4a5b4818, transparent 36%),
+    linear-gradient(to right, var(--slate-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--slate-line) 1px, transparent 1px),
+    var(--bg);
+  background-size: auto, 42px 42px, 42px 42px, auto;
+  color: var(--panel);
+  font-family: var(--sans);
+  font-weight: 400;     /* Display headlines override to 300; body stays regular for legibility. */
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, #05060580 100%);
+}
+::selection { background: var(--accent); color: var(--bg); }
+button, textarea, input { font: inherit; }
+
+/* ---------------------------------------------------------------------
+   Public shell
+   --------------------------------------------------------------------- */
+.shell {
+  position: relative;
+  z-index: 2;
+  width: min(1320px, calc(100vw - 36px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 36px 0;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-content: center;
+  align-items: start;
+}
+.study-rail,
+.progress-panel,
+.stage,
+.coda {
+  border: 1px solid #eef1e536;
+  background: color-mix(in srgb, var(--bg-2) 88%, transparent);
+  box-shadow: 0 32px 90px #00000036;
+}
+.study-rail,
+.progress-panel {
+  padding: 22px;
+  color: #eef1e0;
+}
+.study-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.rail-block {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--slate-line);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #dce2d6;
+}
+.rail-block span:not(.rail-label) { display: block; }
+.rail-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #9da89b;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+.rail-title {
+  font-family: var(--display);
+  font-size: 28px;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  text-transform: none;
+  color: var(--panel);
+}
+
+.study-main {
+  display: grid;
+  /* Single explicit minmax track — without this, an auto track grows to fit
+     content (e.g. wide tables or carousels), pushing the page horizontally. */
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.stage,
+.coda {
+  position: relative;
+  padding: clamp(28px, 4.5vw, 56px);
+  color: var(--ink);
+  background:
+    linear-gradient(to right, #171a160d 1px, transparent 1px),
+    linear-gradient(to bottom, #171a160d 1px, transparent 1px),
+    var(--panel);
+  background-size: 36px 36px, 36px 36px, auto;
+  border-color: #eef1e552;
+  animation: stage-in 460ms cubic-bezier(.2,.8,.2,1) both;
+}
+.stage::before,
+.stage::after,
+.coda::before,
+.coda::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-strong);
+  pointer-events: none;
+}
+.stage::before,.coda::before { top: 18px; right: 18px; border-left: 0; border-bottom: 0; }
+.stage::after,.coda::after { bottom: 18px; left: 18px; border-right: 0; border-top: 0; }
+@keyframes stage-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes rise-fade { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-left { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+@keyframes ink-rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* App-shell intro: rails arrive once on mount. */
+.study-rail { animation: slide-in-left 720ms cubic-bezier(.22,.8,.22,1) both; }
+.progress-panel { animation: slide-in-right 720ms cubic-bezier(.22,.8,.22,1) both 80ms; }
+
+/* Per-stage cascade. React remounts children with key={stage}, so this
+   replays on every transition. Total cascade ~ 700ms. */
+.stage .numeral { animation: scale-in 720ms cubic-bezier(.22,.8,.22,1) both 80ms; transform-origin: left bottom; }
+.stage .q-meta { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 200ms; }
+.stage .q-text { animation: rise-fade 600ms cubic-bezier(.22,.8,.22,1) both 260ms; }
+.stage .prompt { animation: rise-fade 560ms cubic-bezier(.22,.8,.22,1) both 360ms; }
+.stage .choices > .choice:nth-child(1) { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 460ms; }
+.stage .choices > .choice:nth-child(2) { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 540ms; }
+.stage .scale-legend { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 380ms; }
+.stage .scale > * { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both; }
+.stage .scale > *:nth-child(1) { animation-delay: 460ms; }
+.stage .scale > *:nth-child(2) { animation-delay: 510ms; }
+.stage .scale > *:nth-child(3) { animation-delay: 560ms; }
+.stage .scale > *:nth-child(4) { animation-delay: 610ms; }
+.stage .scale > *:nth-child(5) { animation-delay: 660ms; }
+.stage .field-label { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 720ms; }
+.stage .reason { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 780ms; }
+.stage .counter { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 820ms; }
+.stage .submit-row { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 880ms; }
+.stage .recall { animation: rise-fade 520ms cubic-bezier(.22,.8,.22,1) both 900ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage, .coda, .study-rail, .progress-panel,
+  .stage .numeral, .stage .q-meta, .stage .q-text,
+  .stage .prompt, .stage .choices > .choice,
+  .stage .scale-legend, .stage .scale > *,
+  .stage .field-label, .stage .reason, .stage .counter,
+  .stage .submit-row, .stage .recall {
+    animation: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .shell { grid-template-columns: 160px minmax(0, 1fr); }
+  .progress-panel { grid-column: 1 / -1; min-height: auto; }
+}
+@media (max-width: 760px) {
+  .shell { width: min(100vw - 22px, 1320px); grid-template-columns: 1fr; padding: 12px 0; }
+  .study-rail, .progress-panel, .stage, .coda { min-height: auto; }
+  .study-rail { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
+  .rail-block { padding: 0; border-bottom: 0; }
+  .rail-date { margin-top: 0; }
+}
+
+/* ---------------------------------------------------------------------
+   Progress panel — clinical status card
+   --------------------------------------------------------------------- */
+.progress-panel {
+  position: sticky;
+  top: 36px;
+  align-self: start;
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  align-items: end;
+  gap: 18px;
+}
+.progress-kicker,
+.progress-empty {
+  grid-column: 1 / -1;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9da89b;
+}
+.progress-count {
+  font-family: var(--display);
+  color: var(--panel);
+  line-height: 0.82;
+}
+.progress-count span {
+  display: block;
+  font-size: 82px;
+  font-weight: 300;
+  letter-spacing: -0.08em;
+}
+.progress-count small {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #9da89b;
+}
+.progress-track {
+  width: 6px;
+  height: 90px;
+  align-self: end;
+  background: #eef1e518;
+  border: 1px solid #eef1e520;
+  position: relative;
+  overflow: hidden;
+}
+.progress-track span {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: var(--accent);
+  transition: height 300ms ease;
+}
+@media (max-width: 1080px) {
+  .progress-panel { position: static; align-items: center; }
+}
+
+/* ---------------------------------------------------------------------
+   Question content
+   --------------------------------------------------------------------- */
+.question-head {
+  display: grid;
+  grid-template-columns: 94px minmax(0, 1fr);
+  gap: clamp(18px, 3.5vw, 42px);
+  align-items: start;
+  margin-bottom: clamp(26px, 4vw, 46px);
+}
+.numeral {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(74px, 11vw, 146px);
+  line-height: 0.78;
+  letter-spacing: -0.08em;
+  color: var(--accent-dark);
+}
+.q-meta,
+.field-label,
+.recall summary,
+.scale-legend,
+.counter {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.q-meta { margin: 4px 0 12px; }
+.q-text {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(42px, 6.6vw, 76px);
+  line-height: 0.95;
+  letter-spacing: -0.075em;
+  color: var(--ink);
+}
+@media (max-width: 760px) {
+  .question-head { grid-template-columns: 1fr; gap: 10px; }
+  .numeral { font-size: 64px; }
+}
+.prompt {
+  max-width: 68ch;
+  margin: 0 0 38px;
+  padding: 24px 26px;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent-2);
+  color: var(--ink-2);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(17px, 1.8vw, 19px);
+  line-height: 1.66;
+}
+.prompt p { margin: 0 0 14px; }
+.prompt p:last-child { margin-bottom: 0; }
+.prompt .salience {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-style: italic;
+}
+.prompt table.payoff {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 0;
+  font-size: 15px;
+}
+.prompt table.payoff th,
+.prompt table.payoff td {
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid var(--line);
+}
+.prompt table.payoff thead th {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--panel-2);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 760px;
+}
+@media (max-width: 620px) { .choices { grid-template-columns: 1fr; } }
+.choice {
+  position: relative;
+  min-height: 164px;
+  padding: 25px 25px 22px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+.choice::before,
+.choice::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--line-strong);
+}
+.choice::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.choice::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+.choice:hover { transform: translateY(-1px); border-color: var(--accent-dark); background: #fbfaf2; }
+.choice:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 3px; }
+.choice:disabled { cursor: default; }
+.choice .seal {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin-bottom: 18px;
+  border: 1px solid var(--accent-2);
+}
+.choice .label {
+  display: block;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(44px, 5.8vw, 68px);
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+}
+.choice .tag {
+  display: block;
+  margin-top: 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.choice .underline {
+  position: absolute;
+  left: 25px; right: 25px; bottom: 15px;
+  height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 360ms cubic-bezier(.6,.02,.2,1);
+}
+.choice.locked {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: var(--panel);
+  transform: none;
+}
+.choice.locked .tag { color: #eef1e0b0; }
+.choice.locked .seal { border-color: var(--panel); }
+.choice.locked .underline { transform: scaleX(1); }
+.choice.locked::before,.choice.locked::after { border-color: var(--panel); }
+.choice.dim { opacity: 0.34; }
+
+/* ---------------------------------------------------------------------
+   Final stage form controls
+   --------------------------------------------------------------------- */
+.scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 580px;
+  margin: 14px 0 8px;
+}
+.scale button {
+  min-height: 76px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+}
+.scale button:hover { border-color: var(--accent-dark); }
+.scale button.selected { background: var(--accent-dark); color: var(--panel); border-color: var(--accent-dark); }
+.scale-legend { display: flex; justify-content: space-between; max-width: 580px; margin-bottom: 12px; }
+.field-label { display: block; margin: 32px 0 10px; }
+.reason {
+  width: min(100%, 700px);
+  min-height: 124px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  outline: none;
+  resize: vertical;
+}
+.reason:focus { border-color: var(--accent-dark); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.counter { width: min(100%, 700px); text-align: right; margin-top: 6px; }
+.submit-row { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-top: 28px; }
+.submit {
+  border: 1px solid var(--accent-dark);
+  background: var(--accent-dark);
+  color: var(--panel);
+  padding: 14px 20px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.submit:hover { background: var(--ink); border-color: var(--ink); }
+.submit:disabled { opacity: 0.42; cursor: not-allowed; }
+.submit-note { color: var(--muted); font-style: italic; }
+
+/* Final-stage email field. */
+.field-help {
+  margin: 0 0 12px;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.email-input {
+  width: min(100%, 480px);
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  outline: none;
+}
+.email-input:focus {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Countdown (rail). */
+.rail-countdown .countdown-value {
+  font-family: var(--display);
+  font-size: 24px;
+  letter-spacing: -0.04em;
+  color: var(--panel);
+  text-transform: none;
+}
+
+/* OTC verification on the post-submit coda. */
+.otc-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 14px;
+}
+.otc-form input {
+  width: 200px;
+  padding: 14px 16px;
+  border: 1px solid var(--rule-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 24px;
+  letter-spacing: 0.32em;
+  text-align: center;
+  outline: none;
+}
+.otc-form input:focus {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.coda .submit { padding: 14px 22px; }
+.coda .ghost {
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-2);
+  padding: 13px 18px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.coda .ghost:hover { border-color: var(--ink); color: var(--ink); }
+.muted-note { color: var(--muted); font-style: italic; font-size: 14px; }
+
+.recall {
+  width: min(100%, 760px);
+  margin-top: 36px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.recall summary { list-style: none; cursor: pointer; user-select: none; }
+.recall summary::marker,
+.recall summary::-webkit-details-marker { display: none; }
+.recall summary::before { content: "+ "; display: inline-block; width: 1.4em; }
+.recall[open] summary::before { content: "− "; }
+.recall .prompt { margin-top: 14px; font-size: 15px; }
+
+/* ---------------------------------------------------------------------
+   Coda states
+   --------------------------------------------------------------------- */
+.coda h1 {
+  margin: 0 0 18px;
+  max-width: 12ch;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(56px, 8vw, 100px);
+  line-height: 0.95;
+  letter-spacing: -0.08em;
+  color: var(--ink);
+}
+.coda p { max-width: 48ch; color: var(--ink-2); }
+.coda .rule { width: 90px; height: 1px; background: var(--accent); margin: 26px 0; }
+.error-text { color: #e0aa96 !important; }
+
+/* ---------------------------------------------------------------------
+   Admin dashboard — readable on the same slate field
+   --------------------------------------------------------------------- */
+.admin .container,
+.admin .container.wide {
+  position: relative;
+  z-index: 2;
+  width: min(1120px, calc(100vw - 36px));
+  margin: 0 auto;
+  padding: 28px 0 64px;
+}
+.admin h1 {
+  margin: 0;
+  color: var(--panel);
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+.admin h2 {
+  margin: 8px 0 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8fa38d;
+}
+.admin .card {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid #eef1e552;
+  padding: 22px 24px;
+  margin-bottom: 14px;
+}
+.admin .card h1, .admin .card h2 { color: var(--ink); }
+.admin .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.admin .muted { color: var(--muted); font-size: 14px; }
+.admin .pill {
+  display: inline-block;
+  padding: 4px 9px;
+  border: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.admin .pill.open { color: var(--accent-dark); border-color: var(--accent-dark); }
+.admin .pill.closed { color: var(--error); border-color: var(--error); }
+.admin button.primary,
+.admin button.danger,
+.admin button.ghost,
+.admin a.ghost {
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  padding: 9px 13px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.admin button.primary { background: var(--accent-dark); color: var(--panel); border-color: var(--accent-dark); }
+.admin button.danger { color: var(--error); border-color: var(--error); }
+.admin button:hover,
+.admin a.ghost:hover { border-color: var(--ink); }
+.admin input[type="password"] {
+  width: 100%; padding: 14px 16px;
+  border: 1px solid var(--line-strong); background: var(--panel-3); color: var(--ink); outline: none;
+}
+.admin input[type="password"]:focus { border-color: var(--accent-dark); }
+.admin .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 780px) { .admin .grid-2 { grid-template-columns: 1fr; } }
+.admin table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--panel-3); }
+.admin th,.admin td { text-align: left; padding: 10px 12px; border: 1px solid var(--line); }
+.admin th {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); background: var(--panel-2);
+}
+.admin .bar { display:flex; height:22px; overflow:hidden; border:1px solid var(--line); background:var(--panel-2); }
+.admin .bar > span { display:block; line-height:22px; color:var(--panel); text-align:center; white-space:nowrap; overflow:hidden; font-family:var(--mono); font-size:10px; }
+.admin .bar .b-threshold { background: var(--accent-dark); }
+.admin .bar .b-safe { background: var(--ink-2); }
+.admin .error { color: var(--error); font-style: italic; }
+
+
+/* ---------------------------------------------------------------------
+   Public results page
+   --------------------------------------------------------------------- */
+/* Text overrides for the results-shell context.
+   The shell sits on the dark page background; .muted-note and similar utility
+   classes were originally designed for light card surfaces. Inside the shell
+   we override them to a cream tone that reads as quieter than .results-deck
+   without losing legibility against the dark backdrop. */
+.results-shell .muted-note { color: #b8b2a3; }
+.results-shell .results-loading { color: #b8b2a3; }
+
+.results-shell {
+  position: relative;
+  z-index: 2;
+  width: min(960px, calc(100vw - 36px));
+  margin: 0 auto;
+  padding: 28px 0 64px;
+  color: var(--panel);
+}
+.results-mast {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #eef1e525;
+  padding-bottom: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9da89b;
+}
+.results-back { color: inherit; text-decoration: none; }
+.results-back:hover { color: var(--panel); }
+.results-loading { color: var(--muted); font-style: italic; padding: 80px 0; text-align: center; }
+
+.results-coda {
+  margin: 64px 0;
+  padding: 56px clamp(28px, 5vw, 64px);
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid #eef1e548;
+}
+.results-coda h1 {
+  margin: 0 0 16px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(40px, 6vw, 64px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+.results-coda p { margin: 0; max-width: 56ch; color: var(--ink-2); }
+
+.results-main {
+  margin-top: 32px;
+  display: grid;
+  gap: 18px;
+}
+.results-hero {
+  padding: clamp(28px, 5vw, 56px);
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid #eef1e552;
+}
+.results-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.results-headline {
+  margin: 0 0 18px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+}
+.results-deck {
+  margin: 0 0 28px;
+  max-width: 56ch;
+  font-size: clamp(17px, 1.8vw, 19px);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.results-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.share-twitter {
+  background: var(--accent-dark);
+  color: var(--panel);
+  text-decoration: none;
+  padding: 14px 22px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.share-twitter:hover { background: var(--ink); }
+.results-published-at {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.results-split { display: grid; gap: 14px; }
+.split-card {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid #eef1e552;
+  padding: 22px 26px;
+}
+.split-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.split-bar {
+  display: flex;
+  height: 38px;
+  border: 1px solid var(--rule);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.split-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.split-a { background: var(--accent-dark); }
+.split-b { background: var(--ink-2); }
+.split-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.results-footer { padding: 16px 4px 0; }
+
+/* ---------------------------------------------------------------------
+   Post-vote share screen (.coda.done-share)
+   --------------------------------------------------------------------- */
+.done-share { padding: clamp(36px, 6vw, 72px) clamp(28px, 5vw, 64px); }
+.done-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.done-share h1 {
+  margin: 0 0 6px;
+  max-width: 12ch;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(64px, 10vw, 124px);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+  color: var(--ink);
+}
+.done-rank {
+  margin: 12px 0 18px;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.015em;
+  color: var(--accent-dark);
+}
+.done-body {
+  margin: 0 0 28px;
+  max-width: 46ch;
+  color: var(--ink-2);
+  font-size: clamp(17px, 1.8vw, 19px);
+  line-height: 1.55;
+}
+.done-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.done-actions .share-twitter {
+  background: var(--accent-dark);
+  color: var(--panel);
+  text-decoration: none;
+  padding: 14px 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.done-actions .share-twitter:hover { background: var(--ink); }
+.share-copy {
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-2);
+  padding: 13px 18px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+.share-copy:hover { border-color: var(--ink); color: var(--ink); }
+.done-footer {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------
+   Done page subscribe + verify panels
+   --------------------------------------------------------------------- */
+/* Secondary share block, below the email gate */
+.share-block { margin-top: 4px; }
+.share-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.share-body {
+  margin: 0 0 16px;
+  max-width: 52ch;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.coda .rule { margin: 32px 0 24px; }
+.subscribe { max-width: 60ch; }
+.subscribe-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 10px;
+}
+.subscribe.verified .subscribe-kicker { color: var(--accent-dark); }
+.subscribe-headline {
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.subscribe-body {
+  margin: 0 0 18px;
+  max-width: 56ch;
+  color: var(--ink-2);
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+.subscribe-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.subscribe-form input[type="email"] {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--rule-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  outline: none;
+}
+.subscribe-form input[type="email"]:focus {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Live preview banner on /results */
+.preview-banner {
+  border: 1px solid var(--accent-dark);
+  background: color-mix(in srgb, var(--accent-dark) 10%, transparent);
+  color: var(--panel);     /* banner sits on dark page wash; text must be light */
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.preview-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 8px;
+}
+.preview-banner p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--panel);
+  max-width: 80ch;
+}
+
+/* ---------------------------------------------------------------------
+   Cohort panel (Done page) + /c/:code page
+   --------------------------------------------------------------------- */
+.cohort-panel {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.share-twitter--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  pointer-events: none;
+}
+
+/* /c/:code page color variables.
+   Color = ANSWER CHOICE (not question type). Safe to use here because the
+   reader has already submitted; the survey itself stays neutral.
+
+   Mapping (from the experiment's payoffs):
+   - Safe button = guarantees individual survival regardless of others.
+     Self-interested. Reads as RED.
+   - Threshold button = bets on majority cooperation; if more than half press it,
+     everyone lives; otherwise threshold-pressers die. Pro-social, risky.
+     Reads as BLUE. */
+:root {
+  --selfish: #a8331e;        /* deeper clay red — safe button (passes WCAG AA on bar text) */
+  --selfish-dark: #6b1c10;
+  --communal: #1f4886;       /* deeper slate blue — threshold button */
+  --communal-dark: #0f2747;
+}
+
+.cohort-hint {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Section blocks on the cohort page. */
+.cohort-section {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+}
+.cohort-h2 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.cohort-explain {
+  margin: 0 0 20px;
+  /* The cohort page sits on the dark body background; text outside light
+     panel cards reads as cream, not ink. */
+  color: var(--panel);
+  max-width: 68ch;
+  line-height: 1.55;
+}
+.cohort-explain strong { font-weight: 500; color: #fff; }
+.cohort-legend {
+  margin: -8px 0 22px;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.cohort-legend strong { font-weight: 500; }
+.cohort-questions {
+  margin: -10px 0 22px;
+  padding: 12px 18px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 22px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.cohort-questions strong { font-weight: 500; color: var(--ink); }
+@media (max-width: 720px) {
+  .cohort-questions { grid-template-columns: 1fr; }
+}
+.cohort-legend .dot { margin-right: 6px; }
+
+/* Inline color dots for the explainer paragraph and pair headers. */
+.dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin: 0 4px -1px 0;
+  vertical-align: baseline;
+  background: var(--muted);
+}
+.dot-threshold { background: var(--communal); }
+.dot-safe      { background: var(--selfish); }
+.dot-direct    { background: var(--accent-dark); }
+.dot-secondary { background: #475944; }
+.dot-deeper    { background: var(--ink-2); }
+
+/* Tree-depth bar (sage palette — same neutral aesthetic as Results). */
+.depth-card { margin-top: 8px; }
+.depth-bar {
+  display: flex;
+  height: 38px;
+  border: 1px solid var(--rule);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.depth-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.depth-direct    { background: var(--accent-dark); }
+.depth-secondary { background: #475944; }    /* dark olive-sage; 6.4:1 vs cream */
+.depth-deeper    { background: var(--ink-2); }
+.depth-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Bucket row — wraps a label and the four PairBars (one per question). */
+.bucket-row {
+  margin-top: 28px;
+  padding: 18px 18px 12px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  /* The page wrapper sets color:var(--panel) for cream-on-dark body text;
+     inside a cream card we need dark text or content goes invisible.
+     Children that want a softer color (.bucket-sub, .pair-side) override
+     this with var(--muted). */
+  color: var(--ink);
+}
+.bucket-row--compact { padding: 14px 16px 10px; margin-top: 16px; }
+.bucket-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px dotted var(--rule);
+  padding-bottom: 8px;
+}
+.bucket-label {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.bucket-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* PairCard = one question, two stacked rows (cohort + world). */
+.pair-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+  margin-top: 4px;
+}
+@media (max-width: 760px) {
+  .pair-grid { grid-template-columns: 1fr; gap: 14px; }
+}
+.pair-card { margin-top: 14px; }
+.pair-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.pair-kicker { color: var(--ink); }
+.pair-help {
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+.pair-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 4px;
+}
+.pair-row--world { margin-top: 2px; }
+.pair-side {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  align-self: center;
+}
+
+.choice-bar {
+  display: flex;
+  height: 28px;
+  border: 1px solid var(--rule);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.choice-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* Color by ANSWER CHOICE (blue = threshold, red = safe). The same hue is
+   used in both personal and community rows; it's the choice the bar
+   represents that gets the color, not the question being asked. */
+.choice-threshold { background: var(--communal); }
+.choice-safe      { background: var(--selfish); }
+/* World-comparison row visual hierarchy: same hue, but lighter (tinted)
+   so the cohort row reads as primary. We don't dim with opacity (which
+   crushes the white text contrast); instead we paint with a lighter shade
+   and hide the percentage labels — the bar is for visual comparison only,
+   the actual numbers are in the cohort row above and the world-aggregate
+   line in the page footer. */
+.pair-row--world .choice-bar { height: 14px; }
+.pair-row--world .choice-threshold { background: #6b87ad; }
+.pair-row--world .choice-safe      { background: #c87f70; }
+.pair-row--world .choice-fill { color: transparent; }
+
+.choice-bar--locked {
+  display: flex; align-items: center; justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--panel-2),
+    var(--panel-2) 6px,
+    var(--rule) 6px,
+    var(--rule) 7px
+  );
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.choice-locked-text { line-height: 1; }
+
+/* ---------------------------------------------------------------------- */
+/*  /results cohort viz grid (Drift / BigNumber / Constellation / Radar)  */
+/* ---------------------------------------------------------------------- */
+
+/* 2x2 on wide; collapses to 1 column under 760px. The cards inherit
+   visual chrome from .locked-card- helpers below (label, viz wrapper)
+   but live in a static grid here — no carousel, no Sample badge, no veil. */
+.cohort-viz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .cohort-viz-grid { grid-template-columns: 1fr; }
+}
+.viz-card {
+  background: var(--panel-3);
+  border: 1px solid var(--rule);
+  padding: 16px 16px 18px;
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+.viz-card .locked-card-viz {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.viz-card .locked-card-viz svg {
+  /* Cards in the grid are wider than the carousel cards, so we let the SVG
+     grow taller. Drift/Radar/Constellation read better with more vertical room. */
+  height: auto;
+  max-height: 200px;
+}
+
+/* Done-page Cohort panel (kept from earlier; visually distinct from /c/). */
+.cohort-panel {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.share-twitter--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   Done-page locked cohort carousel (Variant 2: frosted veil)
+   Each card sits in a horizontal scroll lane; sample SVG behind, frosted
+   cream veil + lock prompt on top. Card click does nothing; the user is
+   meant to act on the existing email subscribe form above.
+   --------------------------------------------------------------------- */
+.cohort-panel { overflow: hidden; }   /* contain the carousel — prevent body overflow */
+.locked-carousel {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  margin: 18px 0 8px;                /* no negative margin: stays inside panel */
+  padding: 4px 0 14px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--rule) transparent;
+  /* These two together prevent flex children from forcing parent width.    */
+  /* Without min-width:0, the parent layout grows to fit the cards' total. */
+  min-width: 0;
+  max-width: 100%;
+}
+.locked-carousel::-webkit-scrollbar { height: 6px; }
+.locked-carousel::-webkit-scrollbar-thumb { background: var(--rule); }
+.locked-carousel::-webkit-scrollbar-track { background: transparent; }
+
+.locked-card {
+  flex: 0 0 280px;                  /* slightly slimmer so 3 fit in narrow viewports */
+  background: var(--panel-3);
+  border: 1px solid var(--rule);
+  padding: 16px 16px 18px;
+  scroll-snap-align: start;
+  position: relative;
+  min-height: 240px;
+  overflow: hidden;
+}
+.locked-card-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* Top-right corner badge: "Sample". Replaces the bottom "Verify to unlock"
+   strip; communicates that this isn't real data without overlapping the viz. */
+.sample-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  background: var(--ink);
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+}
+.sample-badge::before {
+  /* Small accent dot before the word; consistent with other kicker styling. */
+  content: "";
+  display: inline-block;
+  width: 5px; height: 5px;
+  background: var(--accent);
+  margin-right: 5px;
+  vertical-align: 1px;
+}
+/* All four cards normalize to the same SVG render height so the cards line
+   up regardless of each viz's intrinsic aspect ratio. preserveAspectRatio
+   on each <svg> centers the shape within the box. */
+.locked-card-viz svg {
+  display: block;
+  width: 100%;
+  height: 130px;
+}
+
+/* Sample big-number card body (matches the BigNumberCard JSX). */
+.locked-bignum {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 72px;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  color: var(--communal);
+  margin: 16px 0 6px;
+}
+.locked-bignum-vs {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.locked-bignum-vs strong { color: var(--communal); font-weight: 700; }
+.locked-bignum-strip {
+  margin-top: 14px;
+  height: 6px;
+  display: flex;
+  border: 1px solid var(--rule);
+}
+
+/* (Old bottom-strip lock veil + lock-veil-* styles removed: the SAMPLE badge
+   in the corner now carries that signal without overlapping the viz.) */
+
+/* Behind the veil: the underlying viz is slightly faded so the gradient
+   wash reads as intentional. Without this it can feel like the colors are
+   bleeding through randomly. */
+/* Blur only the data content; the veil itself sits on top sharp. */
+.locked-card-viz {
+  position: relative;       /* anchor for the veil overlay */
+  margin-top: 6px;
+  min-height: 130px;
+}
+.locked-card-viz > svg,
+.locked-card-viz > .locked-bignum,
+.locked-card-viz > .locked-bignum-vs,
+.locked-card-viz > .locked-bignum-strip {
+  /* Blur removed: viz must read clearly through the slim bottom veil. */
+}
+
+/* ---------------------------------------------------------------------
+   Study-rail "View results" link
+   --------------------------------------------------------------------- */
+.rail-results-link {
+  display: block;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed #eef1e525;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+}
+.rail-results-link:hover { color: var(--panel); }
+
+/* ---------------------------------------------------------------------
+   /results unpublished state — re-auth flow + spacing fix
+   --------------------------------------------------------------------- */
+.results-coda-deck {
+  margin: 0 0 24px;
+  max-width: 56ch;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.unpublished-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+}
+.unpublished-form {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+}
+.unpublished-help {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.unpublished-form input {
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-3);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  outline: none;
+}
+.unpublished-form input:focus {
+  border-color: var(--accent-dark);
+}
+
+/* ---------------------------------------------------------------------
+   Cohort ↔ email-input connection (subtle, static, no movement)
+   When a locked card is hovered/focused/clicked we color-shift the email
+   inputs that are visible on the page. No transform, no animation.
+   --------------------------------------------------------------------- */
+.unlock-region { position: relative; }
+/* Highlight ONLY the actual email/code input — no wrapper background or
+   box-shadow on the whole region. The input border + a thin accent halo
+   is the entire effect. */
+.unlock-region--hover input,
+.unlock-region--click input {
+  border-color: var(--accent-dark) !important;
+  box-shadow: 0 0 0 2px rgba(143, 163, 141, 0.35);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+/* Cards as keyboard-focusable buttons — strip default chrome but keep
+   them readable as cards. No transform, no shadow lift. */
+.locked-card {
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 180ms ease;
+}
+.locked-card:hover,
+.locked-card:focus-visible {
+  outline: none;
+  border-color: var(--accent-dark);
+}
+
+/* Inline subscribe/verify form revealed by the cohort "View your results"
+   button. Same shape as the form at the top of the Done page; it's a
+   second entry point so users don't have to scroll back up. */
+.cohort-inline-form {
+  margin-top: 18px;
+  padding: 18px 18px 14px;
+  border: 1px solid var(--rule);
+  background: var(--panel-3);
+}
+.cohort-inline-form .subscribe { margin: 0; max-width: none; }
+.cohort-inline-form .subscribe-kicker { margin-bottom: 4px; }
+.cohort-inline-form .subscribe-headline { font-size: 22px; margin-bottom: 8px; }
+.cohort-inline-form .subscribe-body { font-size: 14px; margin-bottom: 14px; }
+
+/* Light frost over Done-page sample viz only: a faint cream wash so the
+   card reads as "behind glass" without covering live /results charts. */
+.locked-card .locked-card-viz::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(245, 242, 232, 0.28);
+  pointer-events: none;
+  z-index: 1;
+}
+.locked-card-viz svg,
+.locked-card-viz > .locked-bignum,
+.locked-card-viz > .locked-bignum-vs,
+.locked-card-viz > .locked-bignum-strip {
+  position: relative;
+  z-index: 0;
+}

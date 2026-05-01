@@ -1,0 +1,4 @@
+# SPA fallback. Anything that doesn't match a static asset or a Pages
+# Function (functions are routed first) gets the SPA shell. The trailing
+# 200 makes this a rewrite, not a redirect — the URL stays /admin etc.
+/*  /index.html  200

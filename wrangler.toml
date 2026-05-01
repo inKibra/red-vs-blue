@@ -1,0 +1,23 @@
+name = "red-vs-blue"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "dist"
+
+# Bind D1 database. Create via:
+#   wrangler d1 create red-vs-blue
+# then paste the returned database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "red-vs-blue"
+database_id = "86db3fa6-1ada-4218-9cf3-c7bb20a6d23c"
+
+# Secrets (do NOT commit values):
+#   wrangler pages secret put ADMIN_PASSWORD
+#   wrangler pages secret put TOKEN_SECRET
+#   wrangler pages secret put IP_HASH_SALT
+# For local dev, put them in .dev.vars (gitignored).
+
+# Cloudflare Email Service binding is configured per-project via the Pages
+# dashboard, not this file: Pages → <project> → Settings → Functions →
+# Bindings → Add binding → Send Email → name = EMAIL.
+# When absent, sendEmail() falls back to the dev_emails D1 table
+# (admin-only viewer at /dev/email/:id).

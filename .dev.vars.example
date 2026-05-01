@@ -1,0 +1,3 @@
+ADMIN_PASSWORD=change-me-please
+TOKEN_SECRET=replace-with-32-byte-random-base64
+IP_HASH_SALT=replace-with-random-string

@@ -1,0 +1,13 @@
+node_modules
+dist
+.wrangler
+.dev.vars
+*.local
+.DS_Store
+tsconfig.tsbuildinfo
+src/**/*.js
+shared/**/*.js
+functions/**/*.js
+
+# gssh workspace local state
+.gitspace/workspace/
