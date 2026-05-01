@@ -370,30 +370,28 @@ function SplitBar({
   );
 }
 
-function DepthBar({ tree }: { tree: CohortResponse["tree"] }) {
-  const total = Math.max(1, tree.total);
-  const pct = (n: number) => (tree.total === 0 ? 0 : (n / total) * 100);
-  return (
-    <div className="depth-card">
-      <div className="depth-bar">
-        <span className="depth-fill depth-direct" style={{ width: `${pct(tree.direct)}%` }}>
-          {pct(tree.direct) >= 10 ? tree.direct : ""}
-        </span>
-        <span className="depth-fill depth-secondary" style={{ width: `${pct(tree.secondary)}%` }}>
-          {pct(tree.secondary) >= 10 ? tree.secondary : ""}
-        </span>
-        <span className="depth-fill depth-deeper" style={{ width: `${pct(tree.deeper)}%` }}>
-          {pct(tree.deeper) >= 10 ? tree.deeper : ""}
-        </span>
-      </div>
-      <div className="depth-legend">
-        <span><span className="dot dot-direct" /> Direct {tree.direct}</span>
-        <span><span className="dot dot-secondary" /> Second-degree {tree.secondary}</span>
-        <span><span className="dot dot-deeper" /> Deeper {tree.deeper}</span>
-      </div>
+export function DepthBar({ tree }: { tree: CohortResponse["tree"] }) { const total = Math.max(1, tree.total);
+const pct = (n: number) => (tree.total === 0 ? 0 : (n / total) * 100);
+return (
+  <div className="depth-card">
+    <div className="depth-bar">
+      <span className="depth-fill depth-direct" style={{ width: `${pct(tree.direct)}%` }}>
+        {pct(tree.direct) >= 10 ? tree.direct : ""}
+      </span>
+      <span className="depth-fill depth-secondary" style={{ width: `${pct(tree.secondary)}%` }}>
+        {pct(tree.secondary) >= 10 ? tree.secondary : ""}
+      </span>
+      <span className="depth-fill depth-deeper" style={{ width: `${pct(tree.deeper)}%` }}>
+        {pct(tree.deeper) >= 10 ? tree.deeper : ""}
+      </span>
     </div>
-  );
-}
+    <div className="depth-legend">
+      <span><span className="dot dot-direct" /> Direct {tree.direct}</span>
+      <span><span className="dot dot-secondary" /> Second-degree {tree.secondary}</span>
+      <span><span className="dot dot-deeper" /> Deeper {tree.deeper}</span>
+    </div>
+  </div>
+); }
 
 /* ---------------------------------------------------------------------- */
 /*  Cohort visualization grid (Drift / BigNumber / Constellation / Radar)  */
@@ -422,51 +420,49 @@ function CohortVizGrid({ cohort }: { cohort: CohortResponse }) {
 
 /* ---- BigNumber: cohort threshold% vs world, with pp delta -------------- */
 
-function BigNumberCard({
+export function BigNumberCard({
   bucket,
   world,
 }: {
   bucket: CohortBucket;
   world: CohortResponse["world"];
-}) {
-  const cohortPct = bucket.personal?.thresholdPercent ?? null;
-  const worldPct = world.personal.thresholdPercent;
-  // pp delta is null when the cohort bucket itself is k-anon-locked; we still
-  // show the world value but the headline is muted.
-  const delta = cohortPct == null ? null : Math.round((cohortPct - worldPct) * 10) / 10;
-  const arrow = delta == null ? "" : delta > 0 ? "\u2191" : delta < 0 ? "\u2193" : "\u2192";
-  const direction = delta == null
-    ? ""
-    : delta > 0
-      ? "more cooperative than world"
-      : delta < 0
-        ? "less cooperative than world"
-        : "matches world exactly";
-  return (
-    <VizCard label="Cohort vs world">
-      <div className="locked-bignum">
-        {cohortPct == null ? "—" : `${Math.round(cohortPct)}%`}
-      </div>
-      <div className="locked-bignum-vs">
-        {delta == null ? (
-          <span>{`world: ${Math.round(worldPct)}% threshold`}</span>
-        ) : (
-          <>
-            <strong>{`${arrow} ${Math.abs(delta).toFixed(1)} pp`}</strong> {direction}
-          </>
-        )}
-      </div>
-      <div className="locked-bignum-strip" aria-hidden="true">
-        <span style={{ width: `${cohortPct ?? 0}%`, background: "var(--communal)" }} />
-        <span style={{ width: `${100 - (cohortPct ?? 0)}%`, background: "var(--selfish)" }} />
-      </div>
-    </VizCard>
-  );
-}
+}) { const cohortPct = bucket.personal?.thresholdPercent ?? null;
+const worldPct = world.personal.thresholdPercent;
+// pp delta is null when the cohort bucket itself is k-anon-locked; we still
+// show the world value but the headline is muted.
+const delta = cohortPct == null ? null : Math.round((cohortPct - worldPct) * 10) / 10;
+const arrow = delta == null ? "" : delta > 0 ? "\u2191" : delta < 0 ? "\u2193" : "\u2192";
+const direction = delta == null
+  ? ""
+  : delta > 0
+    ? "more cooperative than world"
+    : delta < 0
+      ? "less cooperative than world"
+      : "matches world exactly";
+return (
+  <VizCard label="Cohort vs world">
+    <div className="locked-bignum">
+      {cohortPct == null ? "—" : `${Math.round(cohortPct)}%`}
+    </div>
+    <div className="locked-bignum-vs">
+      {delta == null ? (
+        <span>{`world: ${Math.round(worldPct)}% threshold`}</span>
+      ) : (
+        <>
+          <strong>{`${arrow} ${Math.abs(delta).toFixed(1)} pp`}</strong> {direction}
+        </>
+      )}
+    </div>
+    <div className="locked-bignum-strip" aria-hidden="true">
+      <span style={{ width: `${cohortPct ?? 0}%`, background: "var(--communal)" }} />
+      <span style={{ width: `${100 - (cohortPct ?? 0)}%`, background: "var(--selfish)" }} />
+    </div>
+  </VizCard>
+); }
 
 /* ---- Drift: personal threshold% across [you, direct, secondary, deeper] */
 
-function DriftCard({
+export function DriftCard({
   buckets,
   world,
   viewerChoice,
@@ -475,226 +471,220 @@ function DriftCard({
   world: CohortResponse["world"];
   /** Viewer's own threshold/safe pick; degenerates to 100% / 0% on the line. */
   viewerChoice: "threshold" | "safe" | null;
-}) {
-  // "You" anchors the chain at depth 0. A single respondent is by definition
-  // 100% of their own choice; this is the only honest rendering since the
-  // viewer is one row, not a distribution. Null choice (partial submit) gets
-  // omitted entirely so the line starts at depth 1.
-  const youPct: number | null =
-    viewerChoice === "threshold" ? 100
-    : viewerChoice === "safe" ? 0
-    : null;
-  // Each tier becomes one point on the polyline. Locked buckets (< K_ANON)
-  // get null and we skip them so the line connects only known points; this
-  // is honest about gaps rather than interpolating.
-  type Pt = { label: string; pct: number | null };
-  const pts: Pt[] = [
-    { label: "You",        pct: youPct },
-    { label: "Direct",     pct: buckets.direct.personal?.thresholdPercent ?? null },
-    { label: "2nd-degree", pct: buckets.secondary.personal?.thresholdPercent ?? null },
-    { label: "Deeper",     pct: buckets.deeper.personal?.thresholdPercent ?? null },
-  ];
-  const W = 320, H = 130, padX = 24, padY = 20;
-  const xOf = (i: number) => padX + (i * (W - 2 * padX)) / (pts.length - 1);
-  const yOf = (pct: number) => H - padY - (pct / 100) * (H - 2 * padY);
-  const yWorld = yOf(world.personal.thresholdPercent);
-  const known = pts
-    .map((p, i) => (p.pct == null ? null : { i, pct: p.pct }))
-    .filter((p): p is { i: number; pct: number } => p !== null);
-  const polyPts = known.map((p) => `${xOf(p.i)},${yOf(p.pct)}`).join(" ");
-  return (
-    <VizCard label="Drift across the chain">
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Personal threshold percentage by depth in the cohort chain">
-        {/* world reference line */}
-        <line x1={padX} y1={yWorld} x2={W - padX} y2={yWorld} stroke="#d3cdbb" strokeDasharray="3 3" />
-        <text x={W - padX} y={yWorld - 4} textAnchor="end" fontSize="11" fontWeight="500" fill="#5b6055" fontFamily="ui-monospace, monospace">
-          world {Math.round(world.personal.thresholdPercent)}%
+}) { // "You" anchors the chain at depth 0. A single respondent is by definition
+// 100% of their own choice; this is the only honest rendering since the
+// viewer is one row, not a distribution. Null choice (partial submit) gets
+// omitted entirely so the line starts at depth 1.
+const youPct: number | null =
+  viewerChoice === "threshold" ? 100
+  : viewerChoice === "safe" ? 0
+  : null;
+// Each tier becomes one point on the polyline. Locked buckets (< K_ANON)
+// get null and we skip them so the line connects only known points; this
+// is honest about gaps rather than interpolating.
+type Pt = { label: string; pct: number | null };
+const pts: Pt[] = [
+  { label: "You",        pct: youPct },
+  { label: "Direct",     pct: buckets.direct.personal?.thresholdPercent ?? null },
+  { label: "2nd-degree", pct: buckets.secondary.personal?.thresholdPercent ?? null },
+  { label: "Deeper",     pct: buckets.deeper.personal?.thresholdPercent ?? null },
+];
+const W = 320, H = 130, padX = 24, padY = 20;
+const xOf = (i: number) => padX + (i * (W - 2 * padX)) / (pts.length - 1);
+const yOf = (pct: number) => H - padY - (pct / 100) * (H - 2 * padY);
+const yWorld = yOf(world.personal.thresholdPercent);
+const known = pts
+  .map((p, i) => (p.pct == null ? null : { i, pct: p.pct }))
+  .filter((p): p is { i: number; pct: number } => p !== null);
+const polyPts = known.map((p) => `${xOf(p.i)},${yOf(p.pct)}`).join(" ");
+return (
+  <VizCard label="Drift across the chain">
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Personal threshold percentage by depth in the cohort chain">
+      {/* world reference line */}
+      <line x1={padX} y1={yWorld} x2={W - padX} y2={yWorld} stroke="#d3cdbb" strokeDasharray="3 3" />
+      <text x={W - padX} y={yWorld - 4} textAnchor="end" fontSize="11" fontWeight="500" fill="#5b6055" fontFamily="ui-monospace, monospace">
+        world {Math.round(world.personal.thresholdPercent)}%
+      </text>
+      {/* polyline */}
+      {known.length >= 2 && (
+        <polyline points={polyPts} fill="none" stroke="#1f4886" strokeWidth="2.5" />
+      )}
+      {/* dots */}
+      {known.map((p) => (
+        <circle
+          key={p.i}
+          cx={xOf(p.i)}
+          cy={yOf(p.pct)}
+          r="5"
+          fill={p.pct >= world.personal.thresholdPercent ? "#1f4886" : "#a8331e"}
+        />
+      ))}
+      {/* x-axis labels */}
+      {pts.map((p, i) => (
+        <text
+          key={p.label}
+          x={xOf(i)}
+          y={H - 4}
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="500"
+          fill="#5b6055"
+          fontFamily="ui-monospace, monospace"
+        >
+          {p.label}
         </text>
-        {/* polyline */}
-        {known.length >= 2 && (
-          <polyline points={polyPts} fill="none" stroke="#1f4886" strokeWidth="2.5" />
-        )}
-        {/* dots */}
-        {known.map((p) => (
-          <circle
-            key={p.i}
-            cx={xOf(p.i)}
-            cy={yOf(p.pct)}
-            r="5"
-            fill={p.pct >= world.personal.thresholdPercent ? "#1f4886" : "#a8331e"}
-          />
-        ))}
-        {/* x-axis labels */}
-        {pts.map((p, i) => (
-          <text
-            key={p.label}
-            x={xOf(i)}
-            y={H - 4}
-            textAnchor="middle"
-            fontSize="11"
-            fontWeight="500"
-            fill="#5b6055"
-            fontFamily="ui-monospace, monospace"
-          >
-            {p.label}
-          </text>
-        ))}
-      </svg>
-    </VizCard>
-  );
-}
+      ))}
+    </svg>
+  </VizCard>
+); }
 
 
 /* ---- Radar: 4-question profile, cohort polygon vs world dashed --------- */
 
-function RadarCard({
+export function RadarCard({
   bucket,
   world,
 }: {
   bucket: CohortBucket;
   world: CohortResponse["world"];
-}) {
-  const cx = 160, cy = 100, R = 75;
-  // 4 axes at top/right/bottom/left (12, 3, 6, 9 o'clock).
-  // Question keys live both on `world` and on `bucket`; narrowing to this
-  // union avoids `world.totalResponses` (a number, not a CohortSplit) leaking
-  // into the polygon math.
-  type QuestionKey = "personal" | "community" | "dependent" | "expected";
-  const axes: Array<{ key: QuestionKey; angle: number; label: string }> = [
-    { key: "personal",  angle: -Math.PI / 2,         label: "Personal"  },
-    { key: "community", angle: 0,                    label: "Community" },
-    { key: "dependent", angle: Math.PI / 2,          label: "Dependent" },
-    { key: "expected",  angle: Math.PI,              label: "Expected"  },
-  ];
-  const point = (pct: number, angle: number) => {
-    const r = (pct / 100) * R;
-    return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
-  };
-  const labelPoint = (angle: number) => [
-    cx + (R + 14) * Math.cos(angle),
-    cy + (R + 14) * Math.sin(angle),
-  ];
-  const cohortPolygon = axes
-    .map((a) => {
-      const split = bucket[a.key] as CohortSplit | null;
-      const pct = split?.thresholdPercent ?? 0;
-      return point(pct, a.angle).join(",");
-    })
-    .join(" ");
-  const worldPolygon = axes
-    .map((a) => point(world[a.key].thresholdPercent, a.angle).join(","))
-    .join(" ");
-  const cohortLocked = bucket.personal == null;
-  return (
-    <VizCard label="Four-question profile">
-      <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cohort threshold percentages across the four questions, compared to world">
-        {/* concentric rings at 25/50/75/100% */}
-        <g stroke="#d3cdbb" fill="none" strokeDasharray="2 3">
-          {[0.33, 0.66, 1].map((f) => (
-            <circle key={f} cx={cx} cy={cy} r={R * f} />
-          ))}
-        </g>
-        {/* axes */}
-        {axes.map((a) => {
-          const [ex, ey] = point(100, a.angle);
-          return <line key={a.key} x1={cx} y1={cy} x2={ex} y2={ey} stroke="#d3cdbb" />;
-        })}
-        {/* world (dashed reference) */}
-        <polygon points={worldPolygon} fill="#5b605522" stroke="#5b6055" strokeDasharray="3 3" />
-        {/* cohort (solid accent) */}
-        {!cohortLocked && (
-          <polygon points={cohortPolygon} fill="rgba(38,61,49,0.5)" stroke="#263d31" strokeWidth={2} />
-        )}
-        {/* axis labels */}
-        {axes.map((a) => {
-          const [lx, ly] = labelPoint(a.angle);
-          return (
-            <text
-              key={a.key + "label"}
-              x={lx}
-              y={ly}
-              textAnchor={Math.cos(a.angle) > 0.3 ? "start" : Math.cos(a.angle) < -0.3 ? "end" : "middle"}
-              dominantBaseline="middle"
-              fontSize="12"
-              fontWeight="500"
-              fontFamily="ui-monospace, monospace"
-              fill="#5b6055"
-            >
-              {a.label}
-            </text>
-          );
-        })}
-      </svg>
-    </VizCard>
-  );
-}
-
-/* ---- Constellation: tree as radial node-link diagram ------------------- */
-
-function ConstellationCard({ nodes }: { nodes: CohortNode[] }) {
-  const cx = 170, cy = 100, ringStep = 28;
-  // Recursive radial layout: each node owns an angular wedge centered on its
-  // parent's angle; children divide that wedge evenly. The root sits at the
-  // center and gets the full 2π. Wedges shrink with depth so the tree fans
-  // outward without children overlapping siblings of the parent's siblings.
-  const positioned = layoutConstellation(nodes, cx, cy, ringStep);
-  // Edge list: each non-root node → its parent. Skip when parent missing
-  // (truncated tree branches).
-  const byId = new Map(positioned.map((n) => [n.id, n]));
-  const edges = positioned
-    .filter((n) => n.parent && byId.has(n.parent))
-    .map((n) => {
-      const p = byId.get(n.parent!)!;
-      return { from: p, to: n };
-    });
-  return (
-    <VizCard label="Your network">
-      <svg viewBox="0 0 340 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label={`Network of ${positioned.length} respondents starting from you`}>
-        {edges.map((e, i) => (
-          <line
-            key={i}
-            x1={e.from.x} y1={e.from.y}
-            x2={e.to.x}   y2={e.to.y}
-            stroke="#5b6055"
-            strokeOpacity="0.55"
-          />
+}) { const cx = 160, cy = 100, R = 75;
+// 4 axes at top/right/bottom/left (12, 3, 6, 9 o'clock).
+// Question keys live both on `world` and on `bucket`; narrowing to this
+// union avoids `world.totalResponses` (a number, not a CohortSplit) leaking
+// into the polygon math.
+type QuestionKey = "personal" | "community" | "dependent" | "expected";
+const axes: Array<{ key: QuestionKey; angle: number; label: string }> = [
+  { key: "personal",  angle: -Math.PI / 2,         label: "Personal"  },
+  { key: "community", angle: 0,                    label: "Community" },
+  { key: "dependent", angle: Math.PI / 2,          label: "Dependent" },
+  { key: "expected",  angle: Math.PI,              label: "Expected"  },
+];
+const point = (pct: number, angle: number) => {
+  const r = (pct / 100) * R;
+  return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+};
+const labelPoint = (angle: number) => [
+  cx + (R + 14) * Math.cos(angle),
+  cy + (R + 14) * Math.sin(angle),
+];
+const cohortPolygon = axes
+  .map((a) => {
+    const split = bucket[a.key] as CohortSplit | null;
+    const pct = split?.thresholdPercent ?? 0;
+    return point(pct, a.angle).join(",");
+  })
+  .join(" ");
+const worldPolygon = axes
+  .map((a) => point(world[a.key].thresholdPercent, a.angle).join(","))
+  .join(" ");
+const cohortLocked = bucket.personal == null;
+return (
+  <VizCard label="Four-question profile">
+    <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cohort threshold percentages across the four questions, compared to world">
+      {/* concentric rings at 25/50/75/100% */}
+      <g stroke="#d3cdbb" fill="none" strokeDasharray="2 3">
+        {[0.33, 0.66, 1].map((f) => (
+          <circle key={f} cx={cx} cy={cy} r={R * f} />
         ))}
-        {positioned.map((n) => {
-          const isRoot = n.depth === 0;
-          const fill = n.personalChoice === "threshold"
-            ? "#1f4886"
-            : n.personalChoice === "safe"
-              ? "#a8331e"
-              : "#a89e88";
-          return (
-            <circle
-              key={n.id}
-              cx={n.x}
-              cy={n.y}
-              r={isRoot ? 9 : Math.max(3, 7 - n.depth)}
-              fill={isRoot ? "#263d31" : fill}
-              stroke={isRoot ? "#fff" : "none"}
-              strokeWidth={isRoot ? 2 : 0}
-            />
-          );
-        })}
-        {positioned.length <= 1 && (
+      </g>
+      {/* axes */}
+      {axes.map((a) => {
+        const [ex, ey] = point(100, a.angle);
+        return <line key={a.key} x1={cx} y1={cy} x2={ex} y2={ey} stroke="#d3cdbb" />;
+      })}
+      {/* world (dashed reference) */}
+      <polygon points={worldPolygon} fill="#5b605522" stroke="#5b6055" strokeDasharray="3 3" />
+      {/* cohort (solid accent) */}
+      {!cohortLocked && (
+        <polygon points={cohortPolygon} fill="rgba(38,61,49,0.5)" stroke="#263d31" strokeWidth={2} />
+      )}
+      {/* axis labels */}
+      {axes.map((a) => {
+        const [lx, ly] = labelPoint(a.angle);
+        return (
           <text
-            x={cx}
-            y={cy + 30}
-            textAnchor="middle"
+            key={a.key + "label"}
+            x={lx}
+            y={ly}
+            textAnchor={Math.cos(a.angle) > 0.3 ? "start" : Math.cos(a.angle) < -0.3 ? "end" : "middle"}
+            dominantBaseline="middle"
             fontSize="12"
             fontWeight="500"
             fontFamily="ui-monospace, monospace"
             fill="#5b6055"
           >
-            Share your link to grow this.
+            {a.label}
           </text>
-        )}
-      </svg>
-    </VizCard>
-  );
-}
+        );
+      })}
+    </svg>
+  </VizCard>
+); }
+
+/* ---- Constellation: tree as radial node-link diagram ------------------- */
+
+export function ConstellationCard({ nodes }: { nodes: CohortNode[] }) { const cx = 170, cy = 100, ringStep = 28;
+// Recursive radial layout: each node owns an angular wedge centered on its
+// parent's angle; children divide that wedge evenly. The root sits at the
+// center and gets the full 2π. Wedges shrink with depth so the tree fans
+// outward without children overlapping siblings of the parent's siblings.
+const positioned = layoutConstellation(nodes, cx, cy, ringStep);
+// Edge list: each non-root node → its parent. Skip when parent missing
+// (truncated tree branches).
+const byId = new Map(positioned.map((n) => [n.id, n]));
+const edges = positioned
+  .filter((n) => n.parent && byId.has(n.parent))
+  .map((n) => {
+    const p = byId.get(n.parent!)!;
+    return { from: p, to: n };
+  });
+return (
+  <VizCard label="Your network">
+    <svg viewBox="0 0 340 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label={`Network of ${positioned.length} respondents starting from you`}>
+      {edges.map((e, i) => (
+        <line
+          key={i}
+          x1={e.from.x} y1={e.from.y}
+          x2={e.to.x}   y2={e.to.y}
+          stroke="#5b6055"
+          strokeOpacity="0.55"
+        />
+      ))}
+      {positioned.map((n) => {
+        const isRoot = n.depth === 0;
+        const fill = n.personalChoice === "threshold"
+          ? "#1f4886"
+          : n.personalChoice === "safe"
+            ? "#a8331e"
+            : "#a89e88";
+        return (
+          <circle
+            key={n.id}
+            cx={n.x}
+            cy={n.y}
+            r={isRoot ? 9 : Math.max(3, 7 - n.depth)}
+            fill={isRoot ? "#263d31" : fill}
+            stroke={isRoot ? "#fff" : "none"}
+            strokeWidth={isRoot ? 2 : 0}
+          />
+        );
+      })}
+      {positioned.length <= 1 && (
+        <text
+          x={cx}
+          y={cy + 30}
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="500"
+          fontFamily="ui-monospace, monospace"
+          fill="#5b6055"
+        >
+          Share your link to grow this.
+        </text>
+      )}
+    </svg>
+  </VizCard>
+); }
 
 type LaidOut = CohortNode & { x: number; y: number };
 
@@ -788,7 +778,7 @@ function VizCard({
 /*  Per-bucket detail (cohort vs world for each of the 4 questions)        */
 /* ---------------------------------------------------------------------- */
 
-function BucketRow({
+export function BucketRow({
   label,
   sublabel,
   bucket,
@@ -802,54 +792,52 @@ function BucketRow({
   world: CohortResponse["world"];
   kAnon: number;
   compact?: boolean;
-}) {
-  const locked = bucket.personal == null;
-  const need = Math.max(0, kAnon - bucket.count);
+}) { const locked = bucket.personal == null;
+const need = Math.max(0, kAnon - bucket.count);
 
-  return (
-    <div className={`bucket-row${compact ? " bucket-row--compact" : ""}`}>
-      <div className="bucket-head">
-        <div className="bucket-label">{label}</div>
-        <div className="bucket-sub">
-          {bucket.count.toLocaleString()}{" "}
-          {bucket.count === 1 ? "person" : "people"} · {sublabel}
-          {locked && bucket.count > 0 && ` · ${need} more for stats`}
-        </div>
-      </div>
-
-      <div className="pair-grid">
-        <PairBar
-          kicker="Personal choice"
-          kickerHelp="what would you press?"
-          cohort={bucket.personal}
-          world={world.personal}
-          locked={locked}
-        />
-        <PairBar
-          kicker="Community recommendation"
-          kickerHelp="what should everyone press?"
-          cohort={bucket.community}
-          world={world.community}
-          locked={locked}
-        />
-        <PairBar
-          kicker="For someone you love"
-          kickerHelp="what would you tell a child to press?"
-          cohort={bucket.dependent}
-          world={world.dependent}
-          locked={locked}
-        />
-        <PairBar
-          kicker="Prediction"
-          kickerHelp="what do you think most people will press?"
-          cohort={bucket.expected}
-          world={world.expected}
-          locked={locked}
-        />
+return (
+  <div className={`bucket-row${compact ? " bucket-row--compact" : ""}`}>
+    <div className="bucket-head">
+      <div className="bucket-label">{label}</div>
+      <div className="bucket-sub">
+        {bucket.count.toLocaleString()}{" "}
+        {bucket.count === 1 ? "person" : "people"} · {sublabel}
+        {locked && bucket.count > 0 && ` · ${need} more for stats`}
       </div>
     </div>
-  );
-}
+
+    <div className="pair-grid">
+      <PairBar
+        kicker="Personal choice"
+        kickerHelp="what would you press?"
+        cohort={bucket.personal}
+        world={world.personal}
+        locked={locked}
+      />
+      <PairBar
+        kicker="Community recommendation"
+        kickerHelp="what should everyone press?"
+        cohort={bucket.community}
+        world={world.community}
+        locked={locked}
+      />
+      <PairBar
+        kicker="For someone you love"
+        kickerHelp="what would you tell a child to press?"
+        cohort={bucket.dependent}
+        world={world.dependent}
+        locked={locked}
+      />
+      <PairBar
+        kicker="Prediction"
+        kickerHelp="what do you think most people will press?"
+        cohort={bucket.expected}
+        world={world.expected}
+        locked={locked}
+      />
+    </div>
+  </div>
+); }
 
 function PairBar({
   kicker,

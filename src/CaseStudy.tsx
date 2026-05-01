@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCaseStudyData } from "./api";
 import { buildPrompt, labelsFor } from "@shared/conditions";
-import { CohortPanels } from "./Results";
+import {
+  BigNumberCard,
+  BucketRow,
+  ConstellationCard,
+  DepthBar,
+  DriftCard,
+  RadarCard,
+} from "./Results";
 import { buildSampleCohort } from "./sampleCohort";
 import { SharePanel } from "./SharePanel";
 import type {
@@ -878,84 +885,236 @@ function PvrRow({
 // CohortTease — beefed-up preview of what /results unlocks
 // =========================================================================
 
-export function CohortTease({ shareCode }: { shareCode: string | null }) { const mockCohort = useMemo(buildSampleCohort, []);
-return (
-  <section className="cs-section cs-cohort">
-    <div className="cs-section-eyebrow">The missing layer</div>
-    <h2 className="cs-h2">
-      The crowd is an average. Your friends are a sample.
-    </h2>
+export function CohortTease({ shareCode }: { shareCode: string | null }) {
+  const mock = useMemo(buildSampleCohort, []);
+  const { tree, buckets, world, nodes, kAnonThreshold } = mock;
+  const viewerChoice = nodes.find((n) => n.depth === 0)?.personalChoice ?? null;
 
-    <p className="cs-prose">
-      Everything above is the global view. Two-hundred-and-counting people,
-      four wordings, four labels, two ways to ask the question. Real numbers
-      from a real survey. They tell you what <em>the crowd</em> did.
-    </p>
-    <p className="cs-prose">
-      They don’t tell you what your <strong>friends</strong> would do.
-    </p>
+  return (
+    <section className="cs-section cs-cohort">
+      <div className="cs-section-eyebrow">The missing layer</div>
+      <h2 className="cs-h2">The crowd is an average. Your friends are a sample.</h2>
 
-    <p className="cs-prose">
-      Imagine the same prompt running through a hundred separate friend
-      groups. Each group draws from a different culture, a different
-      conversation history, a different set of priors about cooperation. The
-      global headline is the average across all of them. It does not mean
-      every group is at the average. It almost certainly means that no
-      single group is.
-    </p>
-    <p className="cs-prose cs-prose--callout">
-      A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
-      both. Probably more variety than that. We can’t see that geometry from
-      the topline — friend groups don’t show up in a histogram.
-    </p>
-
-    <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
-    <p className="cs-prose">
-      Once your share link picks up answers from a few friends, the cohort
-      section of your /results fills in. Below is exactly what that page
-      renders, with placeholder numbers in place of your friend graph’s
-      actual ones.
-    </p>
-
-    <div className="cs-cohort-actual">
-      <div className="cs-cohort-actual-banner">
-        <span>Illustrative</span>
-        <span>
-          Your /results page will show your cohort’s actual numbers in place
-          of these placeholders.
-        </span>
-      </div>
-      <div className="cs-cohort-actual-stage">
-        <CohortPanels cohort={mockCohort} />
-      </div>
-    </div>
-
-    <p className="cs-prose">
-      And if those friends share their links too, you get the same view one
-      layer further out: friends-of-friends. Each layer is a slice of the
-      graph that the global number averages over. With every layer, the
-      answer to <em>what kind of room are you in?</em> gets sharper.
-    </p>
-    <p className="cs-prose">
-      The world told us 52%. Your room might say something else. The only
-      way to find out is to ask.
-    </p>
-
-    <div className="cs-cohort-share">
-      <div className="cs-cohort-share-eyebrow">Send your link to three</div>
-      <p className="cs-cohort-share-body">
-        Three is the threshold. Once three friends answer through your link,
-        the cohort section of /results unlocks for you. Send the link, not
-        this page — the case study has spoilers; the survey link keeps the
-        question clean.
+      <p className="cs-prose">
+        Everything above is the global view: hundreds of strangers averaged into
+        a single number. It tells you what <em>the crowd</em> did. It does not
+        tell you what your <strong>friends</strong> would do.
       </p>
-      <SharePanel
-        shareCode={shareCode}
-        tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
-      />
-    </div>
-  </section>
-); }
+      <p className="cs-prose cs-prose--callout">
+        A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
+        both. Probably more variety than that. The topline can’t see geometry.
+      </p>
+
+      <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
+      <p className="cs-prose">
+        Once your share link picks up answers from a few friends, the cohort
+        section of /results fills in. Below is a walkthrough of what it shows,
+        beat by beat, with placeholder numbers from a sample cohort of
+        <strong> {tree.total} respondents </strong>
+        ({tree.direct} direct, {tree.secondary} second-degree, {tree.deeper} deeper).
+      </p>
+
+      <div className="cs-cohort-walk">
+        <CohortBeat
+          n={1}
+          eyebrow="Where they came from"
+          title="Three rings, drawn from your link."
+          prose={
+            <>
+              Every respondent is one of three things relative to you.
+              <strong> Direct</strong> answered through your link.
+              <strong> Second-degree</strong> answered through someone you
+              recruited. <strong>Deeper</strong> is everyone past that—
+              friends-of-friends-of-friends. The bar shows how the chain spread.
+            </>
+          }
+        >
+          <DepthBar tree={tree} />
+        </CohortBeat>
+
+        <CohortBeat
+          n={2}
+          eyebrow="The headline"
+          title="Your room vs the world, in one number."
+          prose={
+            <>
+              The single most important number on the cohort page: what fraction
+              of <em>your</em> people pressed the group-dependent button, and how
+              that compares to the global average. The strip underneath shows
+              the same split as a bar.
+            </>
+          }
+        >
+          <BigNumberCard bucket={buckets.total} world={world} />
+        </CohortBeat>
+
+        <CohortBeat
+          n={3}
+          eyebrow="How it travels"
+          title="Does the answer drift as the chain widens?"
+          prose={
+            <>
+              The line moves from <em>you</em>, to your direct invites, to
+              friends-of-friends, to the deeper tier. A flat line means the
+              signal travels cleanly. A slope means the message mutates as it
+              moves further from you. Locked rings (too few people for
+              k-anonymity) are skipped, not interpolated.
+            </>
+          }
+        >
+          <DriftCard
+            buckets={buckets}
+            world={world}
+            viewerChoice={viewerChoice}
+          />
+        </CohortBeat>
+
+        <CohortBeat
+          n={4}
+          eyebrow="All four questions at once"
+          title="Where your room’s shape pinches and stretches."
+          prose={
+            <>
+              We asked four versions of the question: personal, public
+              recommendation, for-someone-in-your-care, and prediction. Each
+              axis on the radar is one of those questions. The cohort’s polygon
+              is laid over the world’s—where it pinches in or stretches out is
+              exactly where your room is most distinct.
+            </>
+          }
+        >
+          <RadarCard bucket={buckets.total} world={world} />
+        </CohortBeat>
+
+        <CohortBeat
+          n={5}
+          eyebrow="The graph you spawned"
+          title="Each dot is a respondent. Each edge is a referral."
+          prose={
+            <>
+              This is the literal share tree your link produced—not a metaphor.
+              Distance from the center is invitation depth. Color is which
+              button they pressed. You are the dot in the middle.
+            </>
+          }
+        >
+          <ConstellationCard nodes={nodes} />
+        </CohortBeat>
+
+        <CohortBeat
+          n={6}
+          eyebrow="Question by question"
+          title="All four answers, your cohort against the world."
+          prose={
+            <>
+              The four-question profile in plain horizontal bars. Each row is
+              one question; the cohort’s split sits above the world’s. The gap
+              between the two is where your room disagrees with the average.
+            </>
+          }
+        >
+          <BucketRow
+            label="Your whole cohort"
+            sublabel={`${buckets.total.count} people`}
+            bucket={buckets.total}
+            world={world}
+            kAnon={kAnonThreshold}
+          />
+        </CohortBeat>
+
+        <CohortBeat
+          n={7}
+          eyebrow="And by distance"
+          title="The same four questions, broken out by tier."
+          prose={
+            <>
+              Same chart, three slices: people you invited directly, the layer
+              they invited, and everyone past that. If the three rows agree,
+              the message is stable as it spreads. If they disagree, you’re
+              watching it deform in flight.
+            </>
+          }
+        >
+          <BucketRow
+            label="Direct"
+            sublabel="clicked your link"
+            bucket={buckets.direct}
+            world={world}
+            kAnon={kAnonThreshold}
+            compact
+          />
+          <BucketRow
+            label="Second-degree"
+            sublabel="invited by someone you recruited"
+            bucket={buckets.secondary}
+            world={world}
+            kAnon={kAnonThreshold}
+            compact
+          />
+          <BucketRow
+            label="Deeper"
+            sublabel="three or more steps away"
+            bucket={buckets.deeper}
+            world={world}
+            kAnon={kAnonThreshold}
+            compact
+          />
+        </CohortBeat>
+      </div>
+
+      <p className="cs-prose">
+        The world said 52%. Your room might say something else entirely. The
+        only way to find out is to ask three of them.
+      </p>
+
+      <div className="cs-cohort-share">
+        <div className="cs-cohort-share-eyebrow">Send your link to three</div>
+        <p className="cs-cohort-share-body">
+          Three is the threshold. Once three friends answer through your link,
+          the cohort section of /results unlocks with their actual numbers in
+          place of these placeholders. Send the link, not this page—the case
+          study has spoilers; the survey link keeps the question clean.
+        </p>
+        <SharePanel
+          shareCode={shareCode}
+          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+        />
+      </div>
+    </section>
+  );
+}
+
+/**
+ * CohortBeat — one numbered card in the case-study cohort walkthrough.
+ * Each beat: number badge + eyebrow + headline + 1–2 sentences of prose,
+ * then the viz. The number badge is decorative; the eyebrow carries the
+ * actual scan-able label.
+ */
+function CohortBeat({
+  n,
+  eyebrow,
+  title,
+  prose,
+  children,
+}: {
+  n: number;
+  eyebrow: string;
+  title: string;
+  prose: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <article className="cs-cohort-beat">
+      <div className="cs-cohort-beat-num" aria-hidden="true">{n}</div>
+      <div className="cs-cohort-beat-head">
+        <div className="cs-cohort-beat-eyebrow">{eyebrow}</div>
+        <h3 className="cs-cohort-beat-h3">{title}</h3>
+      </div>
+      <p className="cs-cohort-beat-prose">{prose}</p>
+      <div className="cs-cohort-beat-viz">{children}</div>
+    </article>
+  );
+}
 
 // =========================================================================
 // CTA

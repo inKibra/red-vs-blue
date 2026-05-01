@@ -3369,3 +3369,108 @@ button, textarea, input { font: inherit; }
     overflow-y: visible;
   }
 }
+
+/* =====================================================================
+   Case-study cohort walkthrough — numbered beat cards.
+   Each beat is a card with a left number badge, an eyebrow + heading,
+   1–2 sentences of prose, then a viz. Replaces the old wall-of-text
+   illustrative dump.
+   ===================================================================== */
+.cs-cohort-walk {
+  display: grid;
+  gap: 18px;
+  margin: 24px 0 28px;
+}
+.cs-cohort-beat {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 18px 22px;
+  padding: 20px 22px 24px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-dark);
+  border-radius: 4px;
+  color: var(--ink);
+}
+.cs-cohort-beat-num {
+  grid-row: 1 / span 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--accent-dark);
+  color: var(--panel);
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+}
+.cs-cohort-beat-head {
+  grid-column: 2;
+}
+.cs-cohort-beat-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 4px;
+}
+.cs-cohort-beat-h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  color: var(--ink);
+}
+.cs-cohort-beat-prose {
+  grid-column: 2;
+  margin: 0;
+  max-width: 60ch;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.cs-cohort-beat-prose strong { color: var(--ink); font-weight: 500; }
+.cs-cohort-beat-viz {
+  grid-column: 2;
+  margin-top: 4px;
+}
+/* The /results sub-charts assume a dark page background by default; the
+   contrast scope rules added earlier handle .cs-cohort-actual-stage and
+   .cohort-locked-preview-stage. The new beat cards need the same scope. */
+.cs-cohort-beat-viz .cohort-explain,
+.cs-cohort-beat-viz .cohort-h2,
+.cs-cohort-beat-viz .results-headline,
+.cs-cohort-beat-viz .results-deck,
+.cs-cohort-beat-viz .results-kicker {
+  color: var(--ink);
+}
+.cs-cohort-beat-viz .cohort-explain { color: var(--ink-2); }
+.cs-cohort-beat-viz .cohort-explain strong { color: var(--ink); }
+/* Beat 6 / beat 7 host BucketRow which already paints itself a cream
+   panel—flatten its outer border so it reads as belonging to the beat. */
+.cs-cohort-beat-viz .bucket-row {
+  margin-top: 0;
+  border: 1px solid var(--rule);
+}
+.cs-cohort-beat-viz .bucket-row + .bucket-row {
+  margin-top: 12px;
+}
+@media (max-width: 640px) {
+  .cs-cohort-beat {
+    grid-template-columns: 40px 1fr;
+    gap: 14px 14px;
+    padding: 16px 16px 18px;
+  }
+  .cs-cohort-beat-num {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .cs-cohort-beat-h3 { font-size: 19px; }
+}
