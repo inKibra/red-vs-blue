@@ -81,7 +81,14 @@ export default function PreliminaryEmail({
     <Html>
       <Head />
       <Preview>
-        Preliminary results from {totalResponses.toLocaleString()} respondents. The split is one percentage point from a coin flip — but the wording moves the answer thirty points. Read the breakdown.
+        Preliminary results from {totalResponses.toLocaleString()} respondents. The split is{" "}
+        {(() => {
+          const off = Math.abs(50 - personalChoiceThresholdPct);
+          if (off < 1.5) return "about a coin flip";
+          return `~${Math.round(off)} points off a coin flip`;
+        })()}{" "}
+        — but the wording moves the answer{" "}
+        {frameSpread(frameSwing)} points end to end. Read the breakdown.
       </Preview>
       <Body style={{ backgroundColor: palette.page, margin: 0, padding: 0 }}>
         <Container
@@ -384,7 +391,7 @@ export default function PreliminaryEmail({
               </Heading>
               <Text style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: palette.inkSoft }}>
                 Same threshold rule, four mechanism framings, four button
-                labelings. The answer swings ~30 percentage points end to end.
+                labelings. The answer swings ~{frameSpread(frameSwing)} points end to end.
                 Plus the responsibility shift, the prediction-vs-reality gap,
                 the label-condition variance. Full analysis with charts on the
                 case study page.
