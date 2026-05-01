@@ -5,6 +5,18 @@ import { requireEnv } from "../../_lib/env";
 import { error, json, methodNotAllowed } from "../../_lib/http";
 import { signUnsubscribeLink } from "../../_lib/unsubscribe-link";
 
+// Display labels and stable ordering for the four mechanism frames. Order
+// matches the case-study FrameComparator so the email reads in the same
+// sequence the published analysis does.
+const FRAME_DISPLAY: Record<string, { label: string; order: number }> = {
+  original:           { label: "Original",          order: 0 },
+  neutral_outcome:    { label: "Spare prose",       order: 1 },
+  individual_payoff:  { label: "Individual payoff", order: 2 },
+  full_payoff_table:  { label: "Payoff table",      order: 3 },
+};
+
+type FrameRow = { mechanism_frame: string; n: number; thresh: number };
+
 type AggRow = {
   total: number | null;
   personal_threshold: number | null;
@@ -60,13 +72,33 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
   const pct = (n: number) =>
     totalResponses === 0 ? 0 : Math.round((n / totalResponses) * 1000) / 10;
   const personalChoiceThresholdPct = pct(agg?.personal_threshold ?? 0);
-  const publicRecommendationThresholdPct = pct(agg?.public_threshold ?? 0);
   const dependentRecommendationThresholdPct = pct(agg?.dependent_threshold ?? 0);
-  const expectedMajorityThresholdPct = pct(agg?.expected_threshold ?? 0);
   const averageConfidence =
     totalResponses === 0
       ? 0
       : Math.round(((agg?.conf_sum ?? 0) / totalResponses) * 100) / 100;
+
+  // Per-frame personal-choice split for the email's chart. Filter to known
+  // frames so a stale value can't sneak into the rendered email.
+  const frameRowsRaw = await ctx.env.DB.prepare(
+    `SELECT mechanism_frame,
+            COUNT(*) AS n,
+            SUM(CASE WHEN personal_choice = 'threshold' THEN 1 ELSE 0 END) AS thresh
+       FROM responses
+      WHERE submitted_at IS NOT NULL
+        AND mechanism_frame IS NOT NULL
+      GROUP BY mechanism_frame`,
+  ).all<FrameRow>();
+  const frameSwing = (frameRowsRaw.results ?? [])
+    .filter((r) => FRAME_DISPLAY[r.mechanism_frame] != null)
+    .map((r) => ({
+      label: FRAME_DISPLAY[r.mechanism_frame]!.label,
+      pct: r.n === 0 ? 0 : Math.round((r.thresh / r.n) * 1000) / 10,
+      n: r.n,
+      _order: FRAME_DISPLAY[r.mechanism_frame]!.order,
+    }))
+    .sort((a, b) => a._order - b._order)
+    .map(({ label, pct, n }) => ({ label, pct, n }));
 
   const { results } = await ctx.env.DB.prepare(
     `SELECT token_id, email, share_code
@@ -114,10 +146,9 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
           props: {
             totalResponses,
             personalChoiceThresholdPct,
-            publicRecommendationThresholdPct,
             dependentRecommendationThresholdPct,
-            expectedMajorityThresholdPct,
             averageConfidence,
+            frameSwing,
             shareUrl,
             caseStudyUrl,
             unsubscribeUrl,

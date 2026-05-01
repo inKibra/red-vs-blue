@@ -19,10 +19,16 @@ import PreliminaryEmail from "../functions/_lib/templates/PreliminaryEmail.tsx";
 const props = {
   totalResponses: 223,
   personalChoiceThresholdPct: 50.7,
-  publicRecommendationThresholdPct: 53.8,
   dependentRecommendationThresholdPct: 44.4,
-  expectedMajorityThresholdPct: 58.3,
   averageConfidence: 4.23,
+  // Live snapshot from prod D1 byFrame query (read-only):
+  // original 67.3 (n=N), neutral 49.0, individual_payoff 55.9, full_payoff 36.8
+  frameSwing: [
+    { label: "Original",          pct: 67.3, n: 49 },
+    { label: "Spare prose",       pct: 49.0, n: 51 },
+    { label: "Individual payoff", pct: 55.9, n: 59 },
+    { label: "Payoff table",      pct: 36.8, n: 38 },
+  ],
   shareUrl: "https://mayliveforever.com/?ref=EXAMPLE_SHARE_CODE",
   caseStudyUrl: "https://mayliveforever.com/case-study",
   unsubscribeUrl:

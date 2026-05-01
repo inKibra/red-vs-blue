@@ -14,13 +14,24 @@ import {
   Text,
 } from "@react-email/components";
 
+export type FrameSwingRow = {
+  /** Display label (e.g. 'Original', 'Spare prose', 'Individual payoff'). */
+  label: string;
+  /** Personal-choice threshold% inside this frame cell, 0–100. */
+  pct: number;
+  /** Sample size for this cell. */
+  n: number;
+};
+
 export type PreliminaryEmailProps = {
   totalResponses: number;
   personalChoiceThresholdPct: number;
-  publicRecommendationThresholdPct: number;
   dependentRecommendationThresholdPct: number;
-  expectedMajorityThresholdPct: number;
   averageConfidence: number;
+  /** Per-mechanism-frame personal threshold%, ordered widest to narrowest
+      so the chart leads with the strongest framing first. Empty array is
+      acceptable — the chart simply won’t render. */
+  frameSwing: FrameSwingRow[];
   /** Personal share URL with ?ref=<share_code> baked in. */
   shareUrl: string;
   /** Absolute URL to the published case study page. */
@@ -46,9 +57,8 @@ const monoStack = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
 export default function PreliminaryEmail({
   totalResponses,
   personalChoiceThresholdPct,
-  publicRecommendationThresholdPct,
   dependentRecommendationThresholdPct,
-  expectedMajorityThresholdPct,
+  frameSwing,
   averageConfidence,
   shareUrl,
   caseStudyUrl,
@@ -131,21 +141,107 @@ export default function PreliminaryEmail({
               unlocks the cohort layer below.
             </Text>
 
+            {/* Top share CTA — button + copy-pasteable URL block. Mirrors
+                the bottom CTA so a reader who’s already in can act before
+                scrolling through the stats and case-study card. */}
+            <Section style={{ textAlign: "center" as const, margin: "20px 0 10px" }}>
+              <Button
+                href={shareUrl}
+                style={{
+                  backgroundColor: palette.accent,
+                  color: palette.panel,
+                  fontFamily: monoStack,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.16em",
+                  textTransform: "uppercase",
+                  padding: "14px 22px",
+                  textDecoration: "none",
+                }}
+              >
+                Send your link →
+              </Button>
+            </Section>
+            <Section
+              style={{
+                margin: "0 0 4px",
+                padding: "10px 14px",
+                backgroundColor: palette.page,
+                border: `1px solid ${palette.rule}`,
+                borderRadius: 3,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.ink,
+                  fontFamily: monoStack,
+                  fontSize: 13,
+                  lineHeight: 1.45,
+                  wordBreak: "break-all" as const,
+                }}
+              >
+                {shareUrl}
+              </Text>
+            </Section>
+            <Text
+              style={{
+                margin: "6px 0 0",
+                color: palette.muted,
+                fontFamily: monoStack,
+                fontSize: 10,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+              }}
+            >
+              Copy — paste — send
+            </Text>
+
+            {/* Headline finding: the wording moves the answer ~30 points.
+                Replaces the four-stat strip — same email real estate now
+                tells one strong, surprising story instead of four numbers
+                of similar magnitude. */}
             <Section style={{ margin: "28px 0 0" }}>
-              <Row>
-                <Column style={{ width: "25%", paddingRight: 4, verticalAlign: "top" as const }}>
-                  <StatBlock label="Personal pick" value={`${personalChoiceThresholdPct}%`} small />
-                </Column>
-                <Column style={{ width: "25%", padding: "0 4px", verticalAlign: "top" as const }}>
-                  <StatBlock label="Public rec" value={`${publicRecommendationThresholdPct}%`} small />
-                </Column>
-                <Column style={{ width: "25%", padding: "0 4px", verticalAlign: "top" as const }}>
-                  <StatBlock label="Care rec" value={`${dependentRecommendationThresholdPct}%`} small />
-                </Column>
-                <Column style={{ width: "25%", paddingLeft: 4, verticalAlign: "top" as const }}>
-                  <StatBlock label="Predicted" value={`${expectedMajorityThresholdPct}%`} small />
-                </Column>
-              </Row>
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.accent,
+                  fontFamily: monoStack,
+                  fontSize: 11,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                }}
+              >
+                The biggest finding so far
+              </Text>
+              <Heading
+                style={{
+                  margin: "6px 0 14px",
+                  fontWeight: 300,
+                  fontSize: 24,
+                  lineHeight: 1.18,
+                  letterSpacing: "-0.018em",
+                  color: palette.ink,
+                }}
+              >
+                Same question. Four wordings. {frameSpread(frameSwing)} points apart.
+              </Heading>
+              <FrameSwingChart frames={frameSwing} />
+              <Text
+                style={{
+                  margin: "10px 0 0",
+                  color: palette.muted,
+                  fontFamily: monoStack,
+                  fontSize: 11,
+                  letterSpacing: "0.04em",
+                  lineHeight: 1.5,
+                }}
+              >
+                Each bar = % of respondents who picked the group-dependent
+                button when the prompt was framed that way. Same threshold
+                rule, same labels, same outcomes — only the framing sentence
+                changes.
+              </Text>
             </Section>
 
             <Section
@@ -291,17 +387,41 @@ export default function PreliminaryEmail({
                 Send your link →
               </Button>
             </Section>
-            <Text
+            {/* URL displayed in a code-block style so it’s obvious this is
+                a copy-pasteable string, not just secondary footer text. */}
+            <Section
               style={{
-                margin: "16px 0 0",
-                color: palette.muted,
-                fontFamily: monoStack,
-                fontSize: 12,
-                lineHeight: 1.5,
-                wordBreak: "break-all" as const,
+                margin: "12px 0 0",
+                padding: "10px 14px",
+                backgroundColor: palette.page,
+                border: `1px solid ${palette.rule}`,
+                borderRadius: 3,
               }}
             >
-              {shareUrl}
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.ink,
+                  fontFamily: monoStack,
+                  fontSize: 13,
+                  lineHeight: 1.45,
+                  wordBreak: "break-all" as const,
+                }}
+              >
+                {shareUrl}
+              </Text>
+            </Section>
+            <Text
+              style={{
+                margin: "6px 0 0",
+                color: palette.muted,
+                fontFamily: monoStack,
+                fontSize: 10,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+              }}
+            >
+              Copy — paste — send
             </Text>
 
 
@@ -325,58 +445,130 @@ export default function PreliminaryEmail({
   );
 }
 
-function StatBlock({
-  label,
-  value,
-  small,
-}: {
-  label: string;
-  value: string;
-  small?: boolean;
-}) {
+/**
+ * Spread of personal threshold% across all frames — used in the chart
+ * heading. Returns a string with at most one decimal place. Renders “—”
+ * if there’s less than two cells of data.
+ */
+function frameSpread(frames: FrameSwingRow[]): string {
+  const pcts = frames.map((f) => f.pct).filter((p) => Number.isFinite(p));
+  if (pcts.length < 2) return "—";
+  const spread = Math.max(...pcts) - Math.min(...pcts);
+  return (Math.round(spread * 10) / 10).toString();
+}
+
+/**
+ * FrameSwingChart — email-friendly horizontal bar chart of % personal-
+ * choice threshold per mechanism frame. Each row is a Row of three
+ * Columns: label, bar, value. The bar itself is two stacked Sections
+ * sized by % so it renders identically in Outlook (which strips most
+ * CSS) and Gmail (which keeps inline styles).
+ *
+ * Renders nothing when frames is empty (e.g. on first deploy before
+ * any responses by frame).
+ */
+function FrameSwingChart({ frames }: { frames: FrameSwingRow[] }) {
+  if (frames.length === 0) return null;
   return (
     <Section
       style={{
-        backgroundColor: palette.accentSoft,
+        backgroundColor: palette.panel,
         border: `1px solid ${palette.rule}`,
-        padding: small ? "12px 12px" : "20px 18px",
-        /* Force every box in a row to the same outer height so they read
-           as a row of equals regardless of label length. height (not just
-           minHeight) is what email clients respect on table cells. */
-        height: small ? 92 : 140,
-        verticalAlign: "top" as const,
+        padding: "14px 16px",
       }}
     >
-      <Text
-        style={{
-          margin: 0,
-          color: palette.muted,
-          fontFamily: monoStack,
-          fontSize: 10,
-          letterSpacing: "0.16em",
-          textTransform: "uppercase",
-          /* Equalize box heights when labels wrap to different line counts:
-             reserve enough vertical space for two lines of mono10 so a one-
-             line label still occupies the same height as a two-line label. */
-          minHeight: 28,
-          lineHeight: "14px",
-        }}
-      >
-        {label}
-      </Text>
-      <Text
-        style={{
-          margin: small ? "6px 0 0" : "8px 0 0",
-          fontFamily: fontStack,
-          fontWeight: 300,
-          fontSize: small ? 26 : 40,
-          letterSpacing: "-0.04em",
-          lineHeight: 1,
-          color: palette.accent,
-        }}
-      >
-        {value}
-      </Text>
+      {frames.map((row, i) => (
+        <Section
+          key={row.label}
+          style={{
+            margin: i === 0 ? "0" : "10px 0 0",
+          }}
+        >
+          <Row>
+            <Column
+              style={{
+                width: "32%",
+                paddingRight: 10,
+                verticalAlign: "middle" as const,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.ink,
+                  fontFamily: monoStack,
+                  fontSize: 11,
+                  letterSpacing: "0.04em",
+                  lineHeight: 1.3,
+                }}
+              >
+                {row.label}
+                <span
+                  style={{
+                    color: palette.muted,
+                    fontSize: 10,
+                    marginLeft: 6,
+                  }}
+                >
+                  n={row.n}
+                </span>
+              </Text>
+            </Column>
+            <Column style={{ width: "54%", verticalAlign: "middle" as const }}>
+              {/* Two-segment bar. Filled width = pct%. Empty width =
+                  100-pct%. Heights stay identical because both Sections
+                  use the same fixed height. */}
+              <Section
+                style={{
+                  border: `1px solid ${palette.rule}`,
+                  backgroundColor: palette.accentSoft,
+                  height: 18,
+                  lineHeight: "18px",
+                }}
+              >
+                <Row>
+                  <Column
+                    style={{
+                      width: `${row.pct}%`,
+                      backgroundColor: palette.accent,
+                      height: 18,
+                    }}
+                  />
+                  <Column
+                    style={{
+                      width: `${100 - row.pct}%`,
+                      height: 18,
+                    }}
+                  />
+                </Row>
+              </Section>
+            </Column>
+            <Column
+              style={{
+                width: "14%",
+                paddingLeft: 10,
+                verticalAlign: "middle" as const,
+                textAlign: "right" as const,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.accent,
+                  fontFamily: fontStack,
+                  fontWeight: 500,
+                  fontSize: 18,
+                  lineHeight: 1,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {Math.round(row.pct * 10) / 10}%
+              </Text>
+            </Column>
+          </Row>
+        </Section>
+      ))}
     </Section>
   );
 }
+
