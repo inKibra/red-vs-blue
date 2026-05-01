@@ -3071,306 +3071,6 @@ button, textarea, input { font: inherit; }
 }
 
 /* =====================================================================
-   Case-study variant chooser (top-of-page pill bar).
-   ===================================================================== */
-.cs-variant-chooser {
-  margin: 0 0 24px;
-  padding: 14px 16px 16px;
-  background: var(--panel-2, #efe9d8);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-}
-.cs-variant-chooser-eyebrow {
-  display: block;
-  margin-bottom: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cs-variant-chooser-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.cs-variant-pill {
-  flex: 1 1 200px;
-  min-width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 14px;
-  background: var(--panel);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  text-decoration: none;
-  color: var(--ink);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-.cs-variant-pill:hover {
-  background: #fbf6e6;
-  border-color: var(--accent-dark);
-}
-.cs-variant-pill.is-current {
-  background: var(--accent-dark);
-  color: var(--panel);
-  border-color: var(--accent-dark);
-  cursor: default;
-}
-.cs-variant-pill-label {
-  font-family: var(--serif);
-  font-size: 15px;
-  font-weight: 500;
-}
-.cs-variant-pill-gloss {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cs-variant-pill.is-current .cs-variant-pill-gloss {
-  color: rgba(255,255,255,0.75);
-}
-
-/* =====================================================================
-   Stepper variant (/case-study/steps).
-   ===================================================================== */
-.cs-step-progress {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 8px 0 24px;
-}
-.cs-step-tick {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: var(--panel-2);
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.cs-step-tick:hover { background: #fbf6e6; }
-.cs-step-tick.is-done {
-  background: #d8d2bf;
-  color: var(--ink-2);
-}
-.cs-step-tick.is-current {
-  background: var(--accent-dark);
-  color: var(--panel);
-  border-color: var(--accent-dark);
-  transform: scale(1.1);
-}
-.cs-step-stage {
-  scroll-margin-top: 16px;
-  padding: 8px 0 4px;
-}
-.cs-step-eyebrow {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-dark);
-  margin-bottom: 6px;
-}
-.cs-step-title {
-  margin: 0 0 14px;
-  font-family: var(--serif);
-  font-size: 32px;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  font-weight: 400;
-  color: var(--ink);
-}
-.cs-step-intro {
-  margin: 0 0 18px;
-  font-size: 17px;
-  line-height: 1.55;
-  color: var(--ink-2);
-  max-width: 60ch;
-}
-.cs-step-body { margin: 0 0 18px; }
-.cs-step-takeaway {
-  margin: 18px 0 0;
-  padding: 12px 16px;
-  background: var(--panel-2);
-  border-left: 3px solid var(--accent-dark);
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 15px;
-  color: var(--ink);
-  max-width: 64ch;
-}
-.cs-step-takeaway-marker {
-  margin-right: 6px;
-  font-style: normal;
-  color: var(--accent-dark);
-}
-.cs-step-meta {
-  display: grid;
-  gap: 14px;
-}
-.cs-step-meta-list {
-  list-style: none;
-  padding: 14px 18px;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px 16px;
-  background: var(--panel-2);
-  border: 1px solid var(--rule);
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink-2);
-}
-.cs-step-meta-list strong {
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--ink);
-  margin-right: 6px;
-}
-.cs-step-bignum {
-  display: grid;
-  gap: 8px;
-  padding: 22px 24px;
-  background: var(--panel-2);
-  border: 1px solid var(--rule);
-}
-.cs-step-bignum-value {
-  font-family: var(--serif);
-  font-size: 64px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-.cs-step-bignum-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cs-step-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 32px 0 12px;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-}
-.cs-step-nav-btn {
-  padding: 10px 18px;
-  background: var(--panel);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.15s ease;
-}
-.cs-step-nav-btn:hover { background: #fbf6e6; }
-.cs-step-nav-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.cs-step-nav-btn--primary {
-  background: var(--accent-dark);
-  color: var(--panel);
-  border-color: var(--accent-dark);
-}
-.cs-step-nav-btn--primary:hover { background: #1f3525; }
-.cs-step-nav-counter {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-/* =====================================================================
-   Sticky variant (/case-study/sticky).
-   The .cs-sticky-pair element is the sticky container; the viz column
-   inside it sticks for the duration of that pair while the text scrolls.
-   ===================================================================== */
-.cs-sticky-hero {
-  margin-bottom: 32px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--rule);
-}
-.cs-headline--cosmic {
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-.cs-sticky-pair {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: 32px;
-  margin: 48px 0;
-  padding: 24px 0;
-  align-items: start;
-}
-.cs-sticky-text { max-width: 56ch; }
-.cs-sticky-eyebrow {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-dark);
-  margin-bottom: 8px;
-}
-.cs-sticky-h2 {
-  margin: 0 0 16px;
-  font-family: var(--serif);
-  font-size: 28px;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
-  font-weight: 400;
-  color: var(--ink);
-}
-.cs-sticky-h2--centered { text-align: center; max-width: 22ch; margin-inline: auto; margin-bottom: 18px; }
-.cs-sticky-viz {
-  position: sticky;
-  top: 24px;
-  align-self: start;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  background: var(--panel);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 18px;
-}
-.cs-sticky-viz-inner > .cs-section { margin: 0; padding: 0; border: none; background: transparent; }
-.cs-sticky-cohort-wrap { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--rule); }
-.cs-sticky-cohort-lede { max-width: 64ch; margin-inline: auto; text-align: center; margin-bottom: 24px; }
-@media (max-width: 900px) {
-  .cs-sticky-pair {
-    grid-template-columns: 1fr;
-    gap: 18px;
-    margin: 32px 0;
-  }
-  .cs-sticky-viz {
-    position: static;
-    max-height: none;
-    overflow-y: visible;
-  }
-}
-
-/* =====================================================================
    Case-study cohort walkthrough — numbered beat cards.
    Each beat is a card with a left number badge, an eyebrow + heading,
    1–2 sentences of prose, then a viz. Replaces the old wall-of-text
@@ -3473,4 +3173,135 @@ button, textarea, input { font: inherit; }
     font-size: 16px;
   }
   .cs-cohort-beat-h3 { font-size: 19px; }
+}
+
+/* =====================================================================
+   Case-study cohort stepper — the cohort walkthrough renders ONE beat at
+   a time. Tick row at top, beat card in the middle, prev/next at bottom.
+   ===================================================================== */
+.cs-cohort-stepper {
+  margin: 24px 0 28px;
+  padding: 18px 18px 22px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+.cs-cohort-stepper-ticks {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.cs-cohort-stepper-tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px 6px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  min-width: 0;
+}
+.cs-cohort-stepper-tick:hover {
+  background: #fbf6e6;
+  border-color: var(--accent-dark);
+}
+.cs-cohort-stepper-tick.is-done {
+  background: #e9e3d0;
+  border-color: #c8c1ad;
+}
+.cs-cohort-stepper-tick.is-current {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 0 #1f3525;
+}
+.cs-cohort-stepper-tick-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1;
+}
+.cs-cohort-stepper-tick.is-current .cs-cohort-stepper-tick-num {
+  background: var(--panel);
+  color: var(--accent-dark);
+}
+.cs-cohort-stepper-tick-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.2;
+  /* Truncate long eyebrows so the tick row stays one line tall on narrow
+     viewports; the full text is also exposed via the title attribute. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+.cs-cohort-stepper-tick.is-current .cs-cohort-stepper-tick-label {
+  color: rgba(255,255,255,0.85);
+}
+.cs-cohort-stepper-panel { margin-bottom: 18px; }
+/* Inside the stepper panel, the beat card already supplies its own border
+   and background; flatten any extra spacing the standalone card might use. */
+.cs-cohort-stepper-panel .cs-cohort-beat { margin: 0; }
+.cs-cohort-stepper-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.cs-cohort-stepper-btn {
+  padding: 9px 16px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.cs-cohort-stepper-btn:hover:not(:disabled) { background: #fbf6e6; }
+.cs-cohort-stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.cs-cohort-stepper-btn--primary {
+  background: var(--accent-dark);
+  color: var(--panel);
+  border-color: var(--accent-dark);
+}
+.cs-cohort-stepper-btn--primary:hover:not(:disabled) { background: #1f3525; }
+.cs-cohort-stepper-counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@media (max-width: 720px) {
+  .cs-cohort-stepper-ticks {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .cs-cohort-stepper-tick { padding: 6px 2px 4px; }
+  .cs-cohort-stepper-tick-label { display: none; }
 }

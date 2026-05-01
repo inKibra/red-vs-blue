@@ -165,41 +165,6 @@ export function useCaseStudyData(): LoadState {
   return load;
 }
 
-export type VariantKey = "linear" | "steps" | "sticky";
-
-const VARIANTS: { key: VariantKey; href: string; label: string; gloss: string }[] = [
-  { key: "linear", href: "/case-study",        label: "Long form",        gloss: "scroll the whole story" },
-  { key: "steps",  href: "/case-study/steps",  label: "One step at a time", gloss: "finding by finding" },
-  { key: "sticky", href: "/case-study/sticky", label: "Sticky narrative",  gloss: "viz pinned, prose moves" },
-];
-
-/**
- * Variant chooser bar — sits at the very top of every case-study variant
- * so a reader can A/B their preferred reading shape. Renders as a small
- * pill row; the current variant is non-interactive.
- */
-export function VariantChooser({ current }: { current: VariantKey }) {
-  return (
-    <nav className="cs-variant-chooser" aria-label="Case study format">
-      <span className="cs-variant-chooser-eyebrow">Reading format</span>
-      <div className="cs-variant-chooser-row">
-        {VARIANTS.map((v) =>
-          v.key === current ? (
-            <span key={v.key} className="cs-variant-pill is-current" aria-current="page">
-              <span className="cs-variant-pill-label">{v.label}</span>
-              <span className="cs-variant-pill-gloss">{v.gloss}</span>
-            </span>
-          ) : (
-            <a key={v.key} href={v.href} className="cs-variant-pill">
-              <span className="cs-variant-pill-label">{v.label}</span>
-              <span className="cs-variant-pill-gloss">{v.gloss}</span>
-            </a>
-          ),
-        )}
-      </div>
-    </nav>
-  );
-}
 
 export function CaseStudy() {
   const load = useCaseStudyData();
@@ -207,7 +172,6 @@ export function CaseStudy() {
   if (load.kind === "loading") {
     return (
       <CaseStudyShell>
-        <VariantChooser current="linear" />
         <p className="cs-loading">Loading the latest numbers…</p>
       </CaseStudyShell>
     );
@@ -215,7 +179,6 @@ export function CaseStudy() {
   if (load.kind === "error") {
     return (
       <CaseStudyShell>
-        <VariantChooser current="linear" />
         <p className="cs-error">Could not load case-study data: {load.message}</p>
       </CaseStudyShell>
     );
@@ -227,7 +190,6 @@ export function CaseStudy() {
   const data = load.data;
   return (
     <CaseStudyShell asOf={data.dataAsOf} totalResponses={data.totalResponses}>
-      <VariantChooser current="linear" />
       <Hero data={data} />
       <ColorLegend />
       <Headline data={data} />
@@ -890,151 +852,122 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
   const { tree, buckets, world, nodes, kAnonThreshold } = mock;
   const viewerChoice = nodes.find((n) => n.depth === 0)?.personalChoice ?? null;
 
-  return (
-    <section className="cs-section cs-cohort">
-      <div className="cs-section-eyebrow">The missing layer</div>
-      <h2 className="cs-h2">The crowd is an average. Your friends are a sample.</h2>
-
-      <p className="cs-prose">
-        Everything above is the global view: hundreds of strangers averaged into
-        a single number. It tells you what <em>the crowd</em> did. It does not
-        tell you what your <strong>friends</strong> would do.
-      </p>
-      <p className="cs-prose cs-prose--callout">
-        A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
-        both. Probably more variety than that. The topline can’t see geometry.
-      </p>
-
-      <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
-      <p className="cs-prose">
-        Once your share link picks up answers from a few friends, the cohort
-        section of /results fills in. Below is a walkthrough of what it shows,
-        beat by beat, with placeholder numbers from a sample cohort of
-        <strong> {tree.total} respondents </strong>
-        ({tree.direct} direct, {tree.secondary} second-degree, {tree.deeper} deeper).
-      </p>
-
-      <div className="cs-cohort-walk">
-        <CohortBeat
-          n={1}
-          eyebrow="Where they came from"
-          title="Three rings, drawn from your link."
-          prose={
-            <>
-              Every respondent is one of three things relative to you.
-              <strong> Direct</strong> answered through your link.
-              <strong> Second-degree</strong> answered through someone you
-              recruited. <strong>Deeper</strong> is everyone past that—
-              friends-of-friends-of-friends. The bar shows how the chain spread.
-            </>
-          }
-        >
-          <DepthBar tree={tree} />
-        </CohortBeat>
-
-        <CohortBeat
-          n={2}
-          eyebrow="The headline"
-          title="Your room vs the world, in one number."
-          prose={
-            <>
-              The single most important number on the cohort page: what fraction
-              of <em>your</em> people pressed the group-dependent button, and how
-              that compares to the global average. The strip underneath shows
-              the same split as a bar.
-            </>
-          }
-        >
-          <BigNumberCard bucket={buckets.total} world={world} />
-        </CohortBeat>
-
-        <CohortBeat
-          n={3}
-          eyebrow="How it travels"
-          title="Does the answer drift as the chain widens?"
-          prose={
-            <>
-              The line moves from <em>you</em>, to your direct invites, to
-              friends-of-friends, to the deeper tier. A flat line means the
-              signal travels cleanly. A slope means the message mutates as it
-              moves further from you. Locked rings (too few people for
-              k-anonymity) are skipped, not interpolated.
-            </>
-          }
-        >
-          <DriftCard
-            buckets={buckets}
-            world={world}
-            viewerChoice={viewerChoice}
-          />
-        </CohortBeat>
-
-        <CohortBeat
-          n={4}
-          eyebrow="All four questions at once"
-          title="Where your room’s shape pinches and stretches."
-          prose={
-            <>
-              We asked four versions of the question: personal, public
-              recommendation, for-someone-in-your-care, and prediction. Each
-              axis on the radar is one of those questions. The cohort’s polygon
-              is laid over the world’s—where it pinches in or stretches out is
-              exactly where your room is most distinct.
-            </>
-          }
-        >
-          <RadarCard bucket={buckets.total} world={world} />
-        </CohortBeat>
-
-        <CohortBeat
-          n={5}
-          eyebrow="The graph you spawned"
-          title="Each dot is a respondent. Each edge is a referral."
-          prose={
-            <>
-              This is the literal share tree your link produced—not a metaphor.
-              Distance from the center is invitation depth. Color is which
-              button they pressed. You are the dot in the middle.
-            </>
-          }
-        >
-          <ConstellationCard nodes={nodes} />
-        </CohortBeat>
-
-        <CohortBeat
-          n={6}
-          eyebrow="Question by question"
-          title="All four answers, your cohort against the world."
-          prose={
-            <>
-              The four-question profile in plain horizontal bars. Each row is
-              one question; the cohort’s split sits above the world’s. The gap
-              between the two is where your room disagrees with the average.
-            </>
-          }
-        >
-          <BucketRow
-            label="Your whole cohort"
-            sublabel={`${buckets.total.count} people`}
-            bucket={buckets.total}
-            world={world}
-            kAnon={kAnonThreshold}
-          />
-        </CohortBeat>
-
-        <CohortBeat
-          n={7}
-          eyebrow="And by distance"
-          title="The same four questions, broken out by tier."
-          prose={
-            <>
-              Same chart, three slices: people you invited directly, the layer
-              they invited, and everyone past that. If the three rows agree,
-              the message is stable as it spreads. If they disagree, you’re
-              watching it deform in flight.
-            </>
-          }
-        >
+  // Each beat: a numbered card showing one piece of the cohort viz with
+  // its own framing prose. The stepper renders ONE at a time — the reader
+  // advances explicitly via the tick row or prev/next.
+  type Beat = {
+    eyebrow: string;
+    title: string;
+    prose: React.ReactNode;
+    viz: React.ReactNode;
+  };
+  const beats: Beat[] = [
+    {
+      eyebrow: "Where they came from",
+      title: "Three rings, drawn from your link.",
+      prose: (
+        <>
+          Every respondent is one of three things relative to you.
+          <strong> Direct</strong> answered through your link.
+          <strong> Second-degree</strong> answered through someone you
+          recruited. <strong>Deeper</strong> is everyone past that—
+          friends-of-friends-of-friends. The bar shows how the chain spread.
+        </>
+      ),
+      viz: <DepthBar tree={tree} />,
+    },
+    {
+      eyebrow: "The headline",
+      title: "Your room vs the world, in one number.",
+      prose: (
+        <>
+          The single most important number on the cohort page: what fraction
+          of <em>your</em> people pressed the group-dependent button, and how
+          that compares to the global average. The strip underneath shows
+          the same split as a bar.
+        </>
+      ),
+      viz: <BigNumberCard bucket={buckets.total} world={world} />,
+    },
+    {
+      eyebrow: "How it travels",
+      title: "Does the answer drift as the chain widens?",
+      prose: (
+        <>
+          The line moves from <em>you</em>, to your direct invites, to
+          friends-of-friends, to the deeper tier. A flat line means the
+          signal travels cleanly. A slope means the message mutates as it
+          moves further from you. Locked rings (too few people for
+          k-anonymity) are skipped, not interpolated.
+        </>
+      ),
+      viz: (
+        <DriftCard
+          buckets={buckets}
+          world={world}
+          viewerChoice={viewerChoice}
+        />
+      ),
+    },
+    {
+      eyebrow: "All four questions at once",
+      title: "Where your room’s shape pinches and stretches.",
+      prose: (
+        <>
+          We asked four versions of the question: personal, public
+          recommendation, for-someone-in-your-care, and prediction. Each
+          axis on the radar is one of those questions. The cohort’s polygon
+          is laid over the world’s—where it pinches in or stretches out is
+          exactly where your room is most distinct.
+        </>
+      ),
+      viz: <RadarCard bucket={buckets.total} world={world} />,
+    },
+    {
+      eyebrow: "The graph you spawned",
+      title: "Each dot is a respondent. Each edge is a referral.",
+      prose: (
+        <>
+          This is the literal share tree your link produced—not a metaphor.
+          Distance from the center is invitation depth. Color is which
+          button they pressed. You are the dot in the middle.
+        </>
+      ),
+      viz: <ConstellationCard nodes={nodes} />,
+    },
+    {
+      eyebrow: "Question by question",
+      title: "All four answers, your cohort against the world.",
+      prose: (
+        <>
+          The four-question profile in plain horizontal bars. Each row is
+          one question; the cohort’s split sits above the world’s. The gap
+          between the two is where your room disagrees with the average.
+        </>
+      ),
+      viz: (
+        <BucketRow
+          label="Your whole cohort"
+          sublabel={`${buckets.total.count} people`}
+          bucket={buckets.total}
+          world={world}
+          kAnon={kAnonThreshold}
+        />
+      ),
+    },
+    {
+      eyebrow: "And by distance",
+      title: "The same four questions, broken out by tier.",
+      prose: (
+        <>
+          Same chart, three slices: people you invited directly, the layer
+          they invited, and everyone past that. If the three rows agree,
+          the message is stable as it spreads. If they disagree, you’re
+          watching it deform in flight.
+        </>
+      ),
+      viz: (
+        <>
           <BucketRow
             label="Direct"
             sublabel="clicked your link"
@@ -1059,7 +992,97 @@ export function CohortTease({ shareCode }: { shareCode: string | null }) {
             kAnon={kAnonThreshold}
             compact
           />
-        </CohortBeat>
+        </>
+      ),
+    },
+  ];
+
+  const [idx, setIdx] = useState(0);
+  const last = beats.length - 1;
+  const beat = beats[idx]!;
+  const goPrev = () => setIdx((n) => Math.max(0, n - 1));
+  const goNext = () => setIdx((n) => Math.min(last, n + 1));
+
+  return (
+    <section className="cs-section cs-cohort">
+      <div className="cs-section-eyebrow">The missing layer</div>
+      <h2 className="cs-h2">The crowd is an average. Your friends are a sample.</h2>
+
+      <p className="cs-prose">
+        Everything above is the global view: hundreds of strangers averaged into
+        a single number. It tells you what <em>the crowd</em> did. It does not
+        tell you what your <strong>friends</strong> would do.
+      </p>
+      <p className="cs-prose cs-prose--callout">
+        A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
+        both. Probably more variety than that. The topline can’t see geometry.
+      </p>
+
+      <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
+      <p className="cs-prose">
+        Once your share link picks up answers from a few friends, the cohort
+        section of /results fills in. Step through the {beats.length} pieces
+        below to see what it shows, with placeholder numbers from a sample
+        cohort of <strong>{tree.total} respondents</strong> ({tree.direct}{" "}
+        direct, {tree.secondary} second-degree, {tree.deeper} deeper).
+      </p>
+
+      <div className="cs-cohort-stepper" aria-label="Cohort walkthrough">
+        <div className="cs-cohort-stepper-ticks" role="tablist" aria-label="Walkthrough step">
+          {beats.map((b, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === idx}
+              aria-controls="cs-cohort-stepper-panel"
+              className={`cs-cohort-stepper-tick${i === idx ? " is-current" : ""}${i < idx ? " is-done" : ""}`}
+              onClick={() => setIdx(i)}
+              title={b.eyebrow}
+            >
+              <span className="cs-cohort-stepper-tick-num">{i + 1}</span>
+              <span className="cs-cohort-stepper-tick-label">{b.eyebrow}</span>
+            </button>
+          ))}
+        </div>
+
+        <div
+          id="cs-cohort-stepper-panel"
+          role="tabpanel"
+          className="cs-cohort-stepper-panel"
+          aria-live="polite"
+        >
+          <CohortBeat
+            n={idx + 1}
+            eyebrow={beat.eyebrow}
+            title={beat.title}
+            prose={beat.prose}
+          >
+            {beat.viz}
+          </CohortBeat>
+        </div>
+
+        <nav className="cs-cohort-stepper-nav" aria-label="Step navigation">
+          <button
+            type="button"
+            className="cs-cohort-stepper-btn"
+            onClick={goPrev}
+            disabled={idx === 0}
+          >
+            ← Previous
+          </button>
+          <span className="cs-cohort-stepper-counter">
+            {idx + 1} of {beats.length}
+          </span>
+          <button
+            type="button"
+            className="cs-cohort-stepper-btn cs-cohort-stepper-btn--primary"
+            onClick={goNext}
+            disabled={idx === last}
+          >
+            Next →
+          </button>
+        </nav>
       </div>
 
       <p className="cs-prose">
