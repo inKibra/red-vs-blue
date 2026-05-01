@@ -202,6 +202,7 @@ export function CaseStudy() {
       <LabelComparator data={data} />
       <SecondaryVariations data={data} />
       <ResponsibilityShifter data={data} />
+      <MidShareCta shareCode={data.viewerShareCode} />
       <PredictionVsReality data={data} />
       <CohortTease
         shareCode={data.viewerShareCode}
@@ -1014,8 +1015,34 @@ export function CohortTease({
   const [idx, setIdx] = useState(0);
   const last = beats.length - 1;
   const beat = beats[idx]!;
-  const goPrev = () => setIdx((n) => Math.max(0, n - 1));
-  const goNext = () => setIdx((n) => Math.min(last, n + 1));
+
+  // Auto-advance through the beats once on mount so the reader sees the
+  // walkthrough is interactive without having to discover it. As soon as
+  // they touch any control we mark interaction and stop advancing.
+  // We also stop on reaching the last beat so the page doesn't loop
+  // forever, and we respect prefers-reduced-motion.
+  const [hasInteracted, setHasInteracted] = useState(false);
+  useEffect(() => {
+    if (hasInteracted) return;
+    if (idx >= last) return;
+    if (typeof window !== "undefined"
+        && window.matchMedia
+        && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    const t = window.setTimeout(
+      () => setIdx((n) => Math.min(last, n + 1)),
+      3500,
+    );
+    return () => window.clearTimeout(t);
+  }, [idx, hasInteracted, last]);
+
+  const interact = (n: number) => {
+    setHasInteracted(true);
+    setIdx(n);
+  };
+  const goPrev = () => interact(Math.max(0, idx - 1));
+  const goNext = () => interact(Math.min(last, idx + 1));
 
   return (
     <section className="cs-section cs-cohort">
@@ -1053,7 +1080,10 @@ export function CohortTease({
         </p>
       </div>
 
-      <div className="cs-cohort-stepper" aria-label="Cohort walkthrough">
+      <div
+        className={`cs-cohort-stepper${!hasInteracted && idx < last ? " is-auto" : ""}`}
+        aria-label="Cohort walkthrough"
+      >
         <div className="cs-cohort-stepper-ticks" role="tablist" aria-label="Walkthrough step">
           {beats.map((b, i) => (
             <button
@@ -1063,7 +1093,7 @@ export function CohortTease({
               aria-selected={i === idx}
               aria-controls="cs-cohort-stepper-panel"
               className={`cs-cohort-stepper-tick${i === idx ? " is-current" : ""}${i < idx ? " is-done" : ""}`}
-              onClick={() => setIdx(i)}
+              onClick={() => interact(i)}
               title={b.eyebrow}
             >
               <span className="cs-cohort-stepper-tick-num">{i + 1}</span>
@@ -1313,3 +1343,30 @@ function Stat({
 
 export function pct(numer: number, denom: number): number | null { if (denom === 0) return null;
 return Math.round((numer / denom) * 1000) / 10; }
+
+/**
+ * MidShareCta — inset share block dropped midway through the case study
+ * (between ResponsibilityShifter and PredictionVsReality). Lower visual
+ * weight than the bottom CtaBlock so it doesn’t break the reading rhythm,
+ * but offers an action point for readers who already know they want to
+ * recruit their friends — they don’t have to scroll to the end.
+ */
+function MidShareCta({ shareCode }: { shareCode: string | null }) {
+  return (
+    <aside className="cs-mid-share">
+      <div className="cs-mid-share-eyebrow">If you’re enjoying this</div>
+      <h3 className="cs-mid-share-h3">
+        Want to see what your audience would press?
+      </h3>
+      <p className="cs-mid-share-body">
+        Send your link to three people. Once they answer, the cohort section
+        below the next two findings unlocks with their version of these
+        same numbers.
+      </p>
+      <SharePanel
+        shareCode={shareCode}
+        tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+      />
+    </aside>
+  );
+}
