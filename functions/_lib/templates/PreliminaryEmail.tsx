@@ -58,7 +58,7 @@ export default function PreliminaryEmail({
     <Html>
       <Head />
       <Preview>
-        {totalResponses.toLocaleString()} answered. The split is one percentage point from a coin flip. Send three friends and watch your room form.
+        Preliminary results from {totalResponses.toLocaleString()} respondents. The split is one percentage point from a coin flip — but the wording moves the answer thirty points. Read the breakdown.
       </Preview>
       <Body style={{ backgroundColor: palette.page, margin: 0, padding: 0 }}>
         <Container
@@ -87,7 +87,7 @@ export default function PreliminaryEmail({
                 textTransform: "uppercase",
               }}
             >
-              Threshold Study · interim drop
+              Preliminary results · mid-study drop
             </Text>
             <Heading
               style={{
@@ -98,12 +98,13 @@ export default function PreliminaryEmail({
                 letterSpacing: "-0.025em",
               }}
             >
-              {totalResponses.toLocaleString()} answered. We just need 3 more — yours.
+              The preliminary results are in.
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
-              The crowd is split about evenly. But the global number is the
-              average of every friend group mixed together. Your room is one of
-              them. We can’t see it until you bring it.
+              {totalResponses.toLocaleString()} people answered the same question. Globally the
+              split is almost a coin flip. But the average hides the most
+              interesting thing in the data: how much the wording itself
+              moved the answer.
             </Text>
 
             <Section style={{ margin: "28px 0 0" }}>
@@ -145,6 +146,73 @@ export default function PreliminaryEmail({
               </Text>
             </Section>
 
+            <Hr style={{ borderColor: palette.rule, margin: "32px 0 24px" }} />
+
+            {/* Case-study CTA block — prominent secondary action so this
+                email pulls double duty: drives shares AND drives reads of the
+                published analysis. */}
+            <Section
+              style={{
+                margin: "0 0 8px",
+                padding: "22px 22px",
+                backgroundColor: palette.panel,
+                border: `1px solid ${palette.rule}`,
+                borderLeft: `3px solid ${palette.accent}`,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: palette.accent,
+                  fontFamily: monoStack,
+                  fontSize: 10,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                }}
+              >
+                We just published the breakdown
+              </Text>
+              <Heading
+                style={{
+                  margin: "8px 0 12px",
+                  fontWeight: 300,
+                  fontSize: 22,
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.015em",
+                  color: palette.ink,
+                }}
+              >
+                How four wordings made the same question feel like four
+                different ones.
+              </Heading>
+              <Text style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: palette.inkSoft }}>
+                Same threshold rule, four mechanism framings, four button
+                labelings. The answer swings ~30 percentage points end to end.
+                Plus the responsibility shift, the prediction-vs-reality gap,
+                the label-condition variance. Full analysis with charts on the
+                case study page.
+              </Text>
+              <Section style={{ margin: "18px 0 0" }}>
+                <Button
+                  href={caseStudyUrl}
+                  style={{
+                    backgroundColor: palette.panel,
+                    color: palette.accent,
+                    fontFamily: monoStack,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    padding: "12px 18px",
+                    textDecoration: "none",
+                    border: `1px solid ${palette.accent}`,
+                  }}
+                >
+                  Read the case study →
+                </Button>
+              </Section>
+            </Section>
+
             <Hr style={{ borderColor: palette.rule, margin: "28px 0 24px" }} />
 
             <Heading
@@ -156,7 +224,7 @@ export default function PreliminaryEmail({
                 letterSpacing: "-0.02em",
               }}
             >
-              Send your link to 3 people.
+              Want your version of these numbers?
             </Heading>
             <Text style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: palette.inkSoft }}>
               Three is the threshold. Once three friends answer through your
@@ -201,12 +269,6 @@ export default function PreliminaryEmail({
             </Text>
 
 
-            <Hr style={{ borderColor: palette.rule, margin: "28px 0 14px" }} />
-            <Text style={{ margin: 0, fontSize: 13, color: palette.muted }}>
-              <Link href={caseStudyUrl} style={{ color: palette.muted, textDecoration: "underline" }}>
-                Read the full case study →
-              </Link>
-            </Text>
 
             <Hr style={{ borderColor: palette.rule, margin: "20px 0 14px" }} />
             <Text style={{ margin: 0, fontSize: 12, color: palette.muted }}>
@@ -252,6 +314,11 @@ function StatBlock({
           fontSize: 10,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
+          /* Equalize box heights when labels wrap to different line counts:
+             reserve enough vertical space for two lines of mono10 so a one-
+             line label still occupies the same height as a two-line label. */
+          minHeight: 28,
+          lineHeight: "14px",
         }}
       >
         {label}
