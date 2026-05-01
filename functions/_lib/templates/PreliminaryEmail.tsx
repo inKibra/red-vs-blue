@@ -40,18 +40,25 @@ export type PreliminaryEmailProps = {
   unsubscribeUrl: string;
 };
 
+// Palette pulled directly from src/styles.css :root variables on the website,
+// so the email reads as the same product. accent matches the site’s
+// --accent-dark (#263d31), accentSoft is the sage tint used for callouts.
 const palette = {
   page: "#f4f1e8",
   panel: "#fbf8ef",
   ink: "#171a16",
   inkSoft: "#41433a",
-  muted: "#73796e",
+  muted: "#5b6055",     // matches site --muted (WCAG AA against the cream panels)
   rule: "#171a1626",
-  accent: "#314b3f",
+  accent: "#263d31",    // site --accent-dark; used for buttons + emphasis
+  accentMid: "#647862", // site --accent-2; used for the brand rule + sub-accents
   accentSoft: "#dce5dc",
 };
 
 const fontStack = "'Inria Serif', Iowan Old Style, Georgia, serif";
+// Display stack mirrors the website’s --display: 'Spline Sans' with broad
+// fallbacks since web fonts don’t reliably load in email clients.
+const displayStack = "'Spline Sans', 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif";
 const monoStack = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
 
 export default function PreliminaryEmail({
@@ -82,51 +89,74 @@ export default function PreliminaryEmail({
         >
           {/* Brand mast — sits above the main panel so a recipient
               recognizes the sender immediately, before any framing prose. */}
-          <Section
-            style={{
-              padding: "0 0 14px",
-              textAlign: "left" as const,
-            }}
-          >
+          {/* Brand mast — same STUDY / Threshold block the website uses in
+              its left rail, so the recipient recognizes the sender from
+              the same wordmark. Sage rule below echoes the site’s accent-
+              line treatment. */}
+          <Section style={{ padding: "0 0 8px" }}>
             <Row>
-              <Column style={{ verticalAlign: "middle" as const }}>
+              <Column style={{ verticalAlign: "bottom" as const }}>
                 <Text
                   style={{
                     margin: 0,
-                    fontFamily: fontStack,
-                    fontSize: 18,
-                    fontStyle: "italic",
-                    fontWeight: 400,
-                    letterSpacing: "-0.01em",
-                    color: palette.ink,
+                    color: palette.muted,
+                    fontFamily: monoStack,
+                    fontSize: 10,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
                   }}
                 >
-                  The Threshold Study
+                  Study
+                </Text>
+                <Text
+                  style={{
+                    margin: "4px 0 0",
+                    color: palette.ink,
+                    fontFamily: displayStack,
+                    fontSize: 30,
+                    fontWeight: 500,
+                    lineHeight: 0.95,
+                    letterSpacing: "-0.045em",
+                  }}
+                >
+                  Threshold
                 </Text>
               </Column>
               <Column
                 style={{
-                  verticalAlign: "middle" as const,
+                  verticalAlign: "bottom" as const,
                   textAlign: "right" as const,
-                  width: "40%",
+                  width: "45%",
+                  paddingBottom: 4,
                 }}
               >
                 <Link
                   href="https://mayliveforever.com"
                   style={{
                     fontFamily: monoStack,
-                    fontSize: 11,
-                    letterSpacing: "0.14em",
+                    fontSize: 10,
+                    letterSpacing: "0.18em",
                     textTransform: "uppercase",
                     color: palette.muted,
                     textDecoration: "none",
                   }}
                 >
-                  mayliveforever.com
+                  mayliveforever.com ↗
                 </Link>
               </Column>
             </Row>
           </Section>
+          {/* Sage accent rule — echoes the site’s --accent-2 separator. */}
+          <Section
+            style={{
+              borderTop: `2px solid ${palette.accentMid}`,
+              borderBottom: `0`,
+              fontSize: 0,
+              lineHeight: 0,
+              padding: 0,
+              margin: "0 0 14px",
+            }}
+          />
           <Section
             style={{
               backgroundColor: palette.panel,
