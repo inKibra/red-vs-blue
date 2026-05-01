@@ -328,6 +328,13 @@ export type CaseStudyResponse = {
   minN: number;
   /** Total submitted responses across all conditions. */
   totalResponses: number;
+  /**
+   * The viewer's own share_code, when their cookie state lets us resolve it.
+   * Used by the case-study CTA + cohort tease to render the user's share URL
+   * (`/?ref=<code>`). Null when the request is gated to rb_voted=1 only or
+   * when the row hasn't been submitted (no share_code minted yet).
+   */
+  viewerShareCode: string | null;
   /** Topline counts for the four 'who is asked' framings. */
   overall: {
     personalChoice: ChoiceTotals;

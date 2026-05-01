@@ -2,11 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { getCaseStudyData } from "./api";
 import { buildPrompt, labelsFor } from "@shared/conditions";
 import { CohortPanels } from "./Results";
+import { buildSampleCohort } from "./sampleCohort";
+import { SharePanel } from "./SharePanel";
 import type {
   CaseStudyResponse,
-  CohortBucket,
-  CohortNode,
-  CohortResponse,
   LabelCondition,
   MechanismFrame,
   OrderCondition,
@@ -186,9 +185,9 @@ export function CaseStudy() {
       <SecondaryVariations data={data} />
       <ResponsibilityShifter data={data} />
       <PredictionVsReality data={data} />
-      <CohortTease />
+      <CohortTease shareCode={data.viewerShareCode} />
       <WhatElseCouldVary />
-      <CtaBlock />
+      <CtaBlock shareCode={data.viewerShareCode} />
     </CaseStudyShell>
   );
 }
@@ -375,9 +374,12 @@ function FrameComparator({ data }: { data: CaseStudyResponse }) {
         {frames.map((f) => (
           <button
             key={f.key}
+            id={`cs-frame-tab-${f.key}`}
             type="button"
             role="tab"
             aria-selected={f.key === activeKey}
+            aria-controls={`cs-frame-panel-${f.key}`}
+            tabIndex={f.key === activeKey ? 0 : -1}
             className={`cs-frame-tab${f.key === activeKey ? " is-active" : ""}`}
             onClick={() => setActiveKey(f.key)}
           >
@@ -394,7 +396,13 @@ function FrameComparator({ data }: { data: CaseStudyResponse }) {
         ))}
       </div>
 
-      <div className="cs-frame-detail">
+      <div
+        className="cs-frame-detail"
+        role="tabpanel"
+        id={active ? `cs-frame-panel-${active.key}` : undefined}
+        aria-labelledby={active ? `cs-frame-tab-${active.key}` : undefined}
+        tabIndex={0}
+      >
         <div className="cs-frame-card">
           <div className="cs-frame-card-eyebrow">
             What the {active ? FRAME_DISPLAY[active.key].label.toLowerCase() : ""}{" "}
@@ -502,13 +510,16 @@ function LabelComparator({ data }: { data: CaseStudyResponse }) {
         swung by <strong>{swing} percentage points</strong> across the four.
       </p>
 
-      <div className="cs-label-tabs" role="tablist">
+      <div className="cs-label-tabs" role="tablist" aria-label="Button label">
         {labels.map((l) => (
           <button
             key={l.key}
+            id={`cs-label-tab-${l.key}`}
             type="button"
             role="tab"
             aria-selected={l.key === activeKey}
+            aria-controls={`cs-label-panel-${l.key}`}
+            tabIndex={l.key === activeKey ? 0 : -1}
             className={`cs-label-tab${l.key === activeKey ? " is-active" : ""}`}
             onClick={() => setActiveKey(l.key)}
           >
@@ -523,7 +534,13 @@ function LabelComparator({ data }: { data: CaseStudyResponse }) {
         ))}
       </div>
 
-      <div className="cs-label-detail">
+      <div
+        className="cs-label-detail"
+        role="tabpanel"
+        id={active ? `cs-label-panel-${active.key}` : undefined}
+        aria-labelledby={active ? `cs-label-tab-${active.key}` : undefined}
+        tabIndex={0}
+      >
         <div className="cs-label-buttons-row">
           <div className="cs-label-button cs-label-button--threshold">
             <div className="cs-label-button-eyebrow">Group-dependent</div>
@@ -722,7 +739,7 @@ function ResponsibilityShifter({ data }: { data: CaseStudyResponse }) {
     <section className="cs-section cs-responsibility">
       <div className="cs-section-eyebrow">Who you are answering for</div>
       <h2 className="cs-h2">
-        The question you answer is the question you are asked.
+        Who you answer for changes your answer.
       </h2>
       <p className="cs-prose">
         Every respondent answered the same scenario from three angles: what
@@ -731,13 +748,16 @@ function ResponsibilityShifter({ data }: { data: CaseStudyResponse }) {
         three different framings of who the answer is for.
       </p>
 
-      <div className="cs-resp-toggle" role="tablist">
+      <div className="cs-resp-toggle" role="tablist" aria-label="Who you answer for">
         {RESPONSIBILITY_FRAMES.map((rf) => (
           <button
             key={rf.key}
+            id={`cs-resp-tab-${rf.key}`}
             type="button"
             role="tab"
             aria-selected={rf.key === active}
+            aria-controls="cs-resp-stage"
+            tabIndex={rf.key === active ? 0 : -1}
             className={`cs-resp-toggle-btn${rf.key === active ? " is-active" : ""}`}
             onClick={() => setActive(rf.key)}
           >
@@ -747,7 +767,13 @@ function ResponsibilityShifter({ data }: { data: CaseStudyResponse }) {
         ))}
       </div>
 
-      <div className="cs-resp-stage">
+      <div
+        className="cs-resp-stage"
+        role="tabpanel"
+        id="cs-resp-stage"
+        aria-labelledby={`cs-resp-tab-${active}`}
+        tabIndex={0}
+      >
         <p className="cs-resp-question">
           {RESPONSIBILITY_FRAMES.find((r) => r.key === active)?.question}
         </p>
@@ -827,25 +853,44 @@ function PvrRow({
 // CohortTease — beefed-up preview of what /results unlocks
 // =========================================================================
 
-function CohortTease() {
-  const mockCohort = useMemo(buildIllustrativeCohort, []);
+function CohortTease({ shareCode }: { shareCode: string | null }) {
+  const mockCohort = useMemo(buildSampleCohort, []);
   return (
     <section className="cs-section cs-cohort">
       <div className="cs-section-eyebrow">The missing layer</div>
       <h2 className="cs-h2">
-        Global is an average across very different rooms.
+        The crowd is an average. Your friends are a sample.
       </h2>
+
       <p className="cs-prose">
-        A 52/48 split in the world does not mean every group is 52/48. The
-        global number is an average across friend graphs that almost certainly
-        disagree with one another. We can’t see that pattern from totals — we
-        need the graph.
+        Everything above is the global view. Two-hundred-and-counting people,
+        four wordings, four labels, two ways to ask the question. Real numbers
+        from a real survey. They tell you what <em>the crowd</em> did.
+      </p>
+      <p className="cs-prose">
+        They don’t tell you what your <strong>friends</strong> would do.
       </p>
 
       <p className="cs-prose">
+        Imagine the same prompt running through a hundred separate friend
+        groups. Each group draws from a different culture, a different
+        conversation history, a different set of priors about cooperation. The
+        global headline is the average across all of them. It does not mean
+        every group is at the average. It almost certainly means that no
+        single group is.
+      </p>
+      <p className="cs-prose cs-prose--callout">
+        A 52/48 world contains 80/20 friend graphs and 20/80 ones. Probably
+        both. Probably more variety than that. We can’t see that geometry from
+        the topline — friend groups don’t show up in a histogram.
+      </p>
+
+      <h3 className="cs-cohort-preview-title">What your /results page unlocks</h3>
+      <p className="cs-prose">
         Once your share link picks up answers from a few friends, the cohort
-        section of /results fills in. Below is exactly what that page renders,
-        with placeholder numbers in place of your friend graph’s actual ones.
+        section of your /results fills in. Below is exactly what that page
+        renders, with placeholder numbers in place of your friend graph’s
+        actual ones.
       </p>
 
       <div className="cs-cohort-actual">
@@ -863,99 +908,30 @@ function CohortTease() {
 
       <p className="cs-prose">
         And if those friends share their links too, you get the same view one
-        layer out: friends-of-friends. Each layer is a slice of the graph that
-        the global number averages over.
+        layer further out: friends-of-friends. Each layer is a slice of the
+        graph that the global number averages over. With every layer, the
+        answer to <em>what kind of room are you in?</em> gets sharper.
       </p>
+      <p className="cs-prose">
+        The world told us 52%. Your room might say something else. The only
+        way to find out is to ask.
+      </p>
+
+      <div className="cs-cohort-share">
+        <div className="cs-cohort-share-eyebrow">Send your link to three</div>
+        <p className="cs-cohort-share-body">
+          Three is the threshold. Once three friends answer through your link,
+          the cohort section of /results unlocks for you. Send the link, not
+          this page — the case study has spoilers; the survey link keeps the
+          question clean.
+        </p>
+        <SharePanel
+          shareCode={shareCode}
+          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+        />
+      </div>
     </section>
   );
-}
-
-/**
- * Construct a credible illustrative CohortResponse for the case-study tease.
- * Numbers are fictional and the section is clearly banner-tagged as such.
- * Tree shape: 8 direct, 5 second-degree, 2 deeper — the deeper bucket sits
- * below K_ANON=3 so the locked-bucket UX renders too, demonstrating the
- * full cohort layout the live page produces.
- */
-function buildIllustrativeCohort(): CohortResponse {
-  const directNodes: CohortNode[] = Array.from({ length: 8 }, (_, i) => ({
-    id: `D${i}`,
-    parent: "ROOT",
-    depth: 1,
-    personalChoice: i < 6 ? "threshold" : "safe",
-  }));
-  const secondaryNodes: CohortNode[] = Array.from({ length: 5 }, (_, i) => ({
-    id: `S${i}`,
-    parent: `D${i % 4}`,
-    depth: 2,
-    personalChoice: i < 3 ? "threshold" : "safe",
-  }));
-  const deeperNodes: CohortNode[] = Array.from({ length: 2 }, (_, i) => ({
-    id: `X${i}`,
-    parent: `S${i % 3}`,
-    depth: 3,
-    personalChoice: "threshold",
-  }));
-
-  const totalBucket: CohortBucket = {
-    count: 15,
-    personal: { thresholdPercent: 71, safePercent: 29 },
-    community: { thresholdPercent: 75, safePercent: 25 },
-    dependent: { thresholdPercent: 50, safePercent: 50 },
-    expected: { thresholdPercent: 80, safePercent: 20 },
-    averageConfidence: 4.4,
-  };
-  const directBucket: CohortBucket = {
-    count: 8,
-    personal: { thresholdPercent: 75, safePercent: 25 },
-    community: { thresholdPercent: 78, safePercent: 22 },
-    dependent: { thresholdPercent: 56, safePercent: 44 },
-    expected: { thresholdPercent: 84, safePercent: 16 },
-    averageConfidence: 4.5,
-  };
-  const secondaryBucket: CohortBucket = {
-    count: 5,
-    personal: { thresholdPercent: 60, safePercent: 40 },
-    community: { thresholdPercent: 65, safePercent: 35 },
-    dependent: { thresholdPercent: 40, safePercent: 60 },
-    expected: { thresholdPercent: 70, safePercent: 30 },
-    averageConfidence: 4.2,
-  };
-  // Below K_ANON=3 so the live page locks this bucket. Showing the locked
-  // state in the preview is intentional — readers should see the gate.
-  const deeperBucket: CohortBucket = {
-    count: 2,
-    personal: null,
-    community: null,
-    dependent: null,
-    expected: null,
-    averageConfidence: null,
-  };
-
-  return {
-    code: "ILLUSTRATIVE",
-    tree: { direct: 8, secondary: 5, deeper: 2, total: 15 },
-    buckets: {
-      total: totalBucket,
-      direct: directBucket,
-      secondary: secondaryBucket,
-      deeper: deeperBucket,
-    },
-    world: {
-      totalResponses: 223,
-      personal: { thresholdPercent: 52, safePercent: 48 },
-      community: { thresholdPercent: 54, safePercent: 46 },
-      dependent: { thresholdPercent: 44, safePercent: 56 },
-      expected: { thresholdPercent: 58, safePercent: 42 },
-    },
-    nodes: [
-      { id: "ROOT", parent: null, depth: 0, personalChoice: "threshold" },
-      ...directNodes,
-      ...secondaryNodes,
-      ...deeperNodes,
-    ],
-    kAnonThreshold: 3,
-  };
 }
 
 // =========================================================================
@@ -1080,27 +1056,32 @@ function GatePage() {
   );
 }
 
-function CtaBlock() {
+// Bottom-of-page action block. The case study is gated to respondents, so
+// every reader has already taken the survey — the way forward is to grow
+// their cohort or to open their results, not to take the survey again.
+function CtaBlock({ shareCode }: { shareCode: string | null }) {
   return (
     <section className="cs-section cs-cta">
-      <h2 className="cs-h2">Two ways from here.</h2>
-      <div className="cs-cta-grid">
-        <a className="cs-cta-card cs-cta-card--primary" href="/">
-          <div className="cs-cta-card-eyebrow">Haven’t answered yet?</div>
-          <div className="cs-cta-card-headline">Take the survey →</div>
-          <div className="cs-cta-card-body">
-            One question. Sixty seconds. Then your view of the data is yours.
-          </div>
-        </a>
-        <a className="cs-cta-card" href="/results">
-          <div className="cs-cta-card-eyebrow">Already responded?</div>
-          <div className="cs-cta-card-headline">Open your results →</div>
-          <div className="cs-cta-card-body">
-            Share your personal link. Once 3 friends answer through it, your
-            cohort comparison unlocks.
-          </div>
-        </a>
+      <div className="cs-section-eyebrow">Two ways forward</div>
+      <h2 className="cs-h2">Form your cohort. Or see where you already stand.</h2>
+
+      <div className="cs-cta-share">
+        <div className="cs-cta-share-eyebrow">Send your link to three</div>
+        <p className="cs-cta-share-body">
+          Three is the threshold. Once three friends answer through your
+          link, the cohort section of /results unlocks for you. Send the
+          link, not this page — the case study has spoilers; the survey link
+          keeps the question clean.
+        </p>
+        <SharePanel
+          shareCode={shareCode}
+          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+        />
       </div>
+
+      <a className="cs-cta-secondary" href="/results">
+        Already shared? Open your results →
+      </a>
     </section>
   );
 }
@@ -1114,7 +1095,15 @@ function CtaBlock() {
  * width = thresholdPct% and red width = (100 - thresholdPct)%. Used wherever
  * the page is showing a threshold-vs-safe split.
  *
- * `thin` and `thick` adjust visual weight to fit the surrounding context.
+ * Accessibility:
+ *  - role="img" + aria-label so screen readers announce the split rather
+ *    than reading the visual nodes individually.
+ *  - When a fill is wide enough (≥ 14% of bar) the percent text is shown
+ *    inside the colored region itself; matches /results' ChoiceBar pattern
+ *    so a sighted user can read the number directly off the bar.
+ *
+ * `thin` (8px) and `thick` (28px) adjust visual weight; thin omits inline
+ * text because the bar is too short to fit a legible label.
  */
 function StackBar({
   thresholdPct,
@@ -1129,13 +1118,24 @@ function StackBar({
   const cls = `cs-stackbar${thin ? " cs-stackbar--thin" : ""}${
     thick ? " cs-stackbar--thick" : ""
   }`;
+  // Inline labels appear only on the default/thick variants AND only when
+  // the segment is wide enough not to clip ugly. Mirrors /results.
+  const showInline = !thin;
+  const blueLabel = showInline && thresholdPct >= 14 ? `${Math.round(thresholdPct)}%` : "";
+  const redLabel = showInline && safe >= 14 ? `${Math.round(safe)}%` : "";
+  const ariaLabel =
+    `${thresholdPct}% chose group-dependent, ${Math.round(safe * 10) / 10}% chose individual`;
   return (
-    <div className={cls} aria-hidden="true">
+    <div className={cls} role="img" aria-label={ariaLabel}>
       <div
         className="cs-stackbar-blue"
         style={{ width: `${thresholdPct}%` }}
-      />
-      <div className="cs-stackbar-red" style={{ width: `${safe}%` }} />
+      >
+        {blueLabel}
+      </div>
+      <div className="cs-stackbar-red" style={{ width: `${safe}%` }}>
+        {redLabel}
+      </div>
     </div>
   );
 }

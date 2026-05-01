@@ -6,6 +6,8 @@ import type {
   CohortSplit,
   PublicResultsResponse,
 } from "@shared/types";
+import { buildSampleCohort } from "./sampleCohort";
+import { SharePanel } from "./SharePanel";
 import { getPublicResults, sendPreviewLink } from "./api";
 
 type State =
@@ -146,6 +148,9 @@ function ResultsView({ data }: { data: PublicResultsResponse }) {
       {data.cohort && data.cohort.tree.total > 0 && (
         <CohortPanels cohort={data.cohort} />
       )}
+      {data.cohort && data.cohort.tree.total === 0 && (
+        <CohortLockedSection shareCode={data.cohort.code} />
+      )}
 
       <footer className="results-footer">
         <p className="muted-note">
@@ -284,6 +289,58 @@ export function CohortPanels({ cohort }: { cohort: CohortResponse }) {
 /* ---------------------------------------------------------------------- */
 /*  Subcomponents                                                          */
 /* ---------------------------------------------------------------------- */
+
+/**
+ * Locked-cohort section.
+ *
+ * Rendered on /results when the viewer has a share_code (cohort is non-null)
+ * but their tree.total is 0 — they have not yet had any friends respond
+ * through their link. Goal of this panel: show them what the cohort viz
+ * will look like once it unlocks, and put share controls right next to the
+ * preview so the path forward is obvious.
+ *
+ * Live state (tree.total > 0) keeps using <CohortPanels /> directly — the
+ * existing component already handles the per-bucket k-anon lock UX.
+ */
+function CohortLockedSection({ shareCode }: { shareCode: string }) {
+  const sample = buildSampleCohort();
+  return (
+    <section className="cohort-locked-section">
+      <header className="cohort-locked-head">
+        <div className="cohort-locked-eyebrow">Your cohort</div>
+        <h2 className="cohort-locked-h2">
+          Your cohort hasn’t formed yet.
+        </h2>
+        <p className="cohort-locked-deck">
+          Send your link to at least three people. Once they answer, this
+          section unlocks with their answers vs the world — their split,
+          their confidence, how they shifted on responsibility, and how the
+          pattern travels one layer further out.
+        </p>
+      </header>
+
+      <div className="cohort-locked-share">
+        <SharePanel
+          shareCode={shareCode}
+          tweetText="Two buttons. One choice. An anonymous coordination experiment — what would you press?"
+        />
+      </div>
+
+      <div className="cohort-locked-preview">
+        <div className="cohort-locked-preview-banner">
+          <span>Preview</span>
+          <span>
+            This is what fills in once your cohort answers. Numbers below are
+            illustrative.
+          </span>
+        </div>
+        <div className="cohort-locked-preview-stage">
+          <CohortPanels cohort={sample} />
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function SplitBar({
   title,

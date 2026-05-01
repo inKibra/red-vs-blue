@@ -2810,3 +2810,223 @@ button, textarea, input { font: inherit; }
   border-bottom: 1px dashed currentColor;
 }
 .share-case-study:hover { color: var(--ink); }
+
+/* =====================================================================
+   Case study v4 — share controls, share panels, locked /results cohort,
+   and StackBar inline text.
+   ===================================================================== */
+
+/* StackBar inline percent text. Centered horizontally, vertically aligned,
+   with a tiny shadow so the digits stay readable on either color fill. */
+.cs-stackbar-blue,
+.cs-stackbar-red {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -0.005em;
+  color: var(--panel);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.cs-stackbar--thick .cs-stackbar-blue,
+.cs-stackbar--thick .cs-stackbar-red {
+  font-size: 14px;
+  font-weight: 500;
+}
+.cs-stackbar--thin .cs-stackbar-blue,
+.cs-stackbar--thin .cs-stackbar-red {
+  font-size: 0;     /* thin variant has no inline text */
+}
+
+/* SharePanel — used in CaseStudy CTA + CohortTease + Results locked */
+.share-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+.share-panel--compact { gap: 8px; }
+.share-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.share-panel .share-twitter,
+.share-panel .share-copy {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--accent-dark);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 160ms ease, color 160ms ease;
+}
+.share-panel .share-twitter {
+  background: var(--accent-dark);
+  color: var(--panel);
+}
+.share-panel .share-twitter:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.share-panel .share-copy {
+  background: transparent;
+  color: var(--accent-dark);
+}
+.share-panel .share-copy:hover { background: var(--accent-dark); color: var(--panel); }
+.share-panel-url {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  word-break: break-all;
+  padding: 8px 12px;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+}
+.share-panel-warning {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--error);
+  font-style: italic;
+}
+.share-panel-warning a { color: var(--error); border-bottom: 1px dashed currentColor; text-decoration: none; }
+
+/* /case-study CohortTease share block (mirrors structure of CtaBlock share) */
+.cs-cohort-share {
+  margin-top: 28px;
+  padding: 22px 22px 24px;
+  background: var(--panel-3);
+  border-left: 3px solid var(--accent-dark);
+}
+.cs-cohort-share-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 10px;
+}
+.cs-cohort-share-body {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* /case-study CtaBlock — single share block + small secondary link below */
+.cs-cta-share {
+  margin: 18px 0 0;
+  padding: 26px 24px;
+  background: var(--panel-3);
+  border: 1px solid var(--accent-dark);
+}
+.cs-cta-share-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 10px;
+}
+.cs-cta-share-body {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+.cs-cta-secondary {
+  display: inline-block;
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
+.cs-cta-secondary:hover { color: var(--ink); }
+
+/* /results locked cohort skeleton */
+.cohort-locked-section {
+  margin: 28px 0 0;
+  padding: 28px 26px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+}
+.cohort-locked-head { margin-bottom: 18px; }
+.cohort-locked-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 8px;
+}
+.cohort-locked-h2 {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.cohort-locked-deck {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 64ch;
+}
+.cohort-locked-share {
+  margin: 18px 0 22px;
+  padding: 20px 22px;
+  background: var(--panel-3);
+  border-left: 3px solid var(--accent-dark);
+}
+.cohort-locked-preview {
+  margin-top: 18px;
+  border: 1px solid var(--accent-dark);
+  background: var(--panel-2);
+}
+.cohort-locked-preview-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  padding: 12px 18px;
+  background: var(--accent-dark);
+  color: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cohort-locked-preview-banner > span:first-child {
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 2px 8px;
+  background: var(--panel);
+  color: var(--accent-dark);
+}
+.cohort-locked-preview-banner > span:not(:first-child) {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: #cdd5c5;
+  line-height: 1.45;
+}
+.cohort-locked-preview-stage { padding: 18px 18px 24px; }
+.cohort-locked-preview-stage .results-hero { margin-top: 0 !important; padding-top: 0; }
+.cohort-locked-preview-stage .cohort-section:first-of-type { margin-top: 18px; }

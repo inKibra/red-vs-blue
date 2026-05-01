@@ -2,6 +2,7 @@ import { readCookie } from "../../_lib/cookie";
 import type { RouteContext } from "../../_lib/env";
 import { requireEnv } from "../../_lib/env";
 import { error, json, methodNotAllowed } from "../../_lib/http";
+import { verifyToken } from "../../_lib/token";
 import type {
   CaseStudyResponse,
   CaseStudyCell,
@@ -64,13 +65,18 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
   // rb_preview (verified subscriber). The discriminating field tells the
   // client to render the "take the survey first" gate.
   const cookies = ctx.request.headers.get("Cookie");
-  const hasResponded =
-    readCookie(cookies, "rb_voted") === "1" ||
-    readCookie(cookies, "rb_assignment") !== null ||
-    readCookie(cookies, "rb_preview") !== null;
+  const voted = readCookie(cookies, "rb_voted") === "1";
+  const assignment = readCookie(cookies, "rb_assignment");
+  const preview = readCookie(cookies, "rb_preview");
+  const hasResponded = voted || assignment !== null || preview !== null;
   if (!hasResponded) {
     return error(403, "Take the survey first.");
   }
+
+  // Resolve the viewer's share_code from whichever signed token cookie they
+  // have. Used by the case-study CTA + cohort tease to render their share
+  // URL. rb_voted=1 alone has no row reference, so falls back to null.
+  const viewerShareCode = await resolveShareCode(ctx, assignment ?? preview);
   try {
     const [settings, topline, byFrame, bySalience, byLabelCondition, byOrderCondition] =
       await Promise.all([
@@ -90,6 +96,7 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
       publishedAt: settings?.case_study_published_at ?? null,
       minN,
       totalResponses: total,
+      viewerShareCode,
       overall: {
         personalChoice: { threshold: topline.pct ?? 0, safe: topline.psc ?? 0 },
         publicRecommendation: { threshold: topline.prt ?? 0, safe: topline.prs ?? 0 },
@@ -193,4 +200,30 @@ function toCell<K extends string>(key: K, row: ConditionRow<K> | undefined): Cas
     expectedMajorityThresholdPct: cellPct(row?.expected_threshold ?? 0, n, n),
     averageConfidence: n < minN ? null : Math.round((confSum / n) * 100) / 100,
   };
+}
+
+
+/**
+ * Decode a signed ResponseToken (`rb_assignment` or `rb_preview` cookie) and
+ * look up the corresponding row's share_code. Returns null if the token is
+ * missing, malformed, expired, or if the row hasn't been submitted yet (in
+ * which case there's no share_code to surface).
+ *
+ * Failure modes are squashed to null because the caller doesn't need to
+ * distinguish them: missing share_code just means the case-study CTA falls
+ * back to a generic share without a ?ref= attribution param.
+ */
+async function resolveShareCode(
+  ctx: RouteContext,
+  cookieToken: string | null,
+): Promise<string | null> {
+  if (!cookieToken) return null;
+  const payload = await verifyToken(ctx.env.TOKEN_SECRET, cookieToken);
+  if (!payload) return null;
+  const row = await ctx.env.DB.prepare(
+    `SELECT share_code FROM responses WHERE token_id = ? AND submitted_at IS NOT NULL`,
+  )
+    .bind(payload.id)
+    .first<{ share_code: string | null }>();
+  return row?.share_code ?? null;
 }
