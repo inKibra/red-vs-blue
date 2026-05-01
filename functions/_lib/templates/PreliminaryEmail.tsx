@@ -137,8 +137,8 @@ export default function PreliminaryEmail({
               }}
             >
               <strong style={{ fontWeight: 600 }}>And we just need 3 more from you.</strong>{" "}
-              Once three friends answer through your link, your /results
-              unlocks the cohort layer below.
+              Once three friends answer through your link, you unlock
+              insights about your audience vs the world.
             </Text>
 
             {/* Top share CTA — button + copy-pasteable URL block. Mirrors
