@@ -3030,3 +3030,42 @@ button, textarea, input { font: inherit; }
 .cohort-locked-preview-stage { padding: 18px 18px 24px; }
 .cohort-locked-preview-stage .results-hero { margin-top: 0 !important; padding-top: 0; }
 .cohort-locked-preview-stage .cohort-section:first-of-type { margin-top: 18px; }
+
+/* =====================================================================
+   Contrast scope: when the /results cohort viz is rendered inside a
+   cream-background container (the case-study tease or the locked-state
+   preview on /results), its prose colors that were designed for the
+   dark page background invert. Override them here to dark variants so
+   the text is readable on cream.
+   ===================================================================== */
+.cs-cohort-actual-stage,
+.cohort-locked-preview-stage {
+  /* Most descendant text without an explicit color rule inherits the
+     body's cream color. Reset the inherited color at the boundary so
+     the inversion only has to happen once. */
+  color: var(--ink);
+}
+.cs-cohort-actual-stage .cohort-explain,
+.cohort-locked-preview-stage .cohort-explain {
+  color: var(--ink-2);
+}
+.cs-cohort-actual-stage .cohort-explain strong,
+.cohort-locked-preview-stage .cohort-explain strong {
+  color: var(--ink);
+}
+.cs-cohort-actual-stage .cohort-h2,
+.cohort-locked-preview-stage .cohort-h2 {
+  color: var(--ink);
+}
+.cs-cohort-actual-stage .results-headline,
+.cohort-locked-preview-stage .results-headline {
+  color: var(--ink);
+}
+.cs-cohort-actual-stage .results-deck,
+.cohort-locked-preview-stage .results-deck {
+  color: var(--ink-2);
+}
+.cs-cohort-actual-stage .results-kicker,
+.cohort-locked-preview-stage .results-kicker {
+  color: var(--accent-dark);
+}
