@@ -91,11 +91,18 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
       ]);
 
     const total = topline.total ?? 0;
+    // Total rows including not-yet-submitted starts. Headline number across
+      // the page; analyzedCount (=total) stays the percentage denominator.
+    const totalRowsRow = await ctx.env.DB.prepare(
+      `SELECT COUNT(*) AS total FROM responses`,
+    ).first<{ total: number | null }>();
+    const totalResponses = totalRowsRow?.total ?? total;
     const payload = {
       dataAsOf: new Date().toISOString(),
       publishedAt: settings?.case_study_published_at ?? null,
       minN,
-      totalResponses: total,
+      totalResponses,
+      analyzedCount: total,
       viewerShareCode,
       overall: {
         personalChoice: { threshold: topline.pct ?? 0, safe: topline.psc ?? 0 },

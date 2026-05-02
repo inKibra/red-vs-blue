@@ -266,12 +266,23 @@ return (
       Same question, four wordings, thirty points apart.
     </h1>
     <p className="cs-deck">
-      We asked {data.totalResponses.toLocaleString()} people one question
-      with a button on the left and a button on the right. Globally, the
-      split is almost a coin flip —{" "}
+      We asked <strong>{data.totalResponses.toLocaleString()}</strong> people one
+      question with a button on the left and a button on the right. Globally,
+      the split is almost a coin flip —{" "}
       <strong>{personalThreshold ?? 0}%</strong> for the group-dependent
       option. But that average hides the most interesting thing in the data:
       how much the wording itself moved the answer.
+    </p>
+    <p className="cs-analyzed">
+      Analysis below uses the{" "}
+      <strong>{data.analyzedCount.toLocaleString()}</strong>{" "}
+      fully-submitted responses.
+      {data.totalResponses > data.analyzedCount && (
+        <>
+          {" "}({(data.totalResponses - data.analyzedCount).toLocaleString()}{" "}
+          more started but didn’t finish.)
+        </>
+      )}
     </p>
   </section>
 ); }

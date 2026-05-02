@@ -1659,6 +1659,16 @@ button, textarea, input { font: inherit; }
   max-width: 60ch;
 }
 .cs-deck strong { color: var(--ink); font-weight: 600; }
+.cs-analyzed {
+  margin: 4px 0 0;
+  max-width: 60ch;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-style: italic;
+  color: var(--muted);
+}
+.cs-analyzed strong { color: var(--ink-2); font-style: normal; font-weight: 600; }
 
 .cs-section {
   margin: 56px 0 0;

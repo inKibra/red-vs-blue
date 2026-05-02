@@ -326,8 +326,13 @@ export type CaseStudyResponse = {
   publishedAt: string | null;
   /** Min cell size below which percentages are suppressed. */
   minN: number;
-  /** Total submitted responses across all conditions. */
+  /** Headline number — every row in the responses table including starts that
+      didn’t finish. Used wherever the page renders 'N people answered'. */
   totalResponses: number;
+  /** Submitted-only count — the denominator behind every percentage on this
+      payload. Surface this as a small clarifier so the reader can square the
+      headline N with what the analysis is computed on. */
+  analyzedCount: number;
   /**
    * The viewer's own share_code, when their cookie state lets us resolve it.
    * Used by the case-study CTA + cohort tease to render the user's share URL
