@@ -32,7 +32,7 @@ type SubscriberRow = {
   share_code: string;
 };
 
-type RequestBody = { apply?: unknown };
+type RequestBody = { apply?: unknown; onlyEmail?: unknown };
 
 function maskEmail(email: string): string {
   const [local = "", domain = ""] = email.split("@");
@@ -55,6 +55,16 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
     return error(400, "Invalid JSON body.");
   }
   const apply = body.apply === true;
+  // onlyEmail — single-recipient test mode. When set, the eligibility query
+  // result is filtered to that one email so the admin can fire a real-inbox
+  // fidelity test (Gmail/Apple Mail rendering, List-Unsubscribe header,
+  // dark-mode color inversion) before the full blast. Idempotency stamp still
+  // applies, so the test recipient won’t double-receive when the real blast
+  // runs later.
+  const onlyEmail =
+    typeof body.onlyEmail === "string" && body.onlyEmail.includes("@")
+      ? body.onlyEmail.trim().toLowerCase()
+      : null;
 
   const agg = await ctx.env.DB.prepare(
     `SELECT
@@ -117,7 +127,13 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
        AND unsubscribed_at IS NULL
        AND share_code IS NOT NULL`,
   ).all<SubscriberRow>();
-  const subscribers = results ?? [];
+  let allSubscribers = results ?? [];
+  if (onlyEmail) {
+    allSubscribers = allSubscribers.filter(
+      (s) => s.email.trim().toLowerCase() === onlyEmail,
+    );
+  }
+  const subscribers = allSubscribers;
   const origin = new URL(ctx.request.url).origin;
 
   if (!apply) {
