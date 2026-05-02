@@ -1058,7 +1058,7 @@ export function CohortTease({
   return (
     <section className="cs-section cs-cohort">
       <div className="cs-section-eyebrow">The missing layer</div>
-      <h2 className="cs-h2">The crowd is an average. Your friends are a sample.</h2>
+      <h2 className="cs-h2">The crowd forms an average. But what about your friends?</h2>
 
       <p className="cs-prose">
         Everything above is one number per question — the crowd, averaged.
