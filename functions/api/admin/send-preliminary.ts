@@ -68,15 +68,23 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
      WHERE submitted_at IS NOT NULL`,
   ).first<AggRow>();
 
-  const totalResponses = agg?.total ?? 0;
+  // analyzedCount = fully-submitted only; this is the denominator for every
+  // percentage and the average. totalResponses = all rows including the
+  // 'started but didn’t finish' tail so the headline number reads bigger and
+  // matches what a recipient thinks of as 'how many people answered'.
+  const analyzedCount = agg?.total ?? 0;
+  const totalRow = await ctx.env.DB.prepare(
+    `SELECT COUNT(*) AS total FROM responses`,
+  ).first<{ total: number | null }>();
+  const totalResponses = totalRow?.total ?? 0;
   const pct = (n: number) =>
-    totalResponses === 0 ? 0 : Math.round((n / totalResponses) * 1000) / 10;
+    analyzedCount === 0 ? 0 : Math.round((n / analyzedCount) * 1000) / 10;
   const personalChoiceThresholdPct = pct(agg?.personal_threshold ?? 0);
   const dependentRecommendationThresholdPct = pct(agg?.dependent_threshold ?? 0);
   const averageConfidence =
-    totalResponses === 0
+    analyzedCount === 0
       ? 0
-      : Math.round(((agg?.conf_sum ?? 0) / totalResponses) * 100) / 100;
+      : Math.round(((agg?.conf_sum ?? 0) / analyzedCount) * 100) / 100;
 
   // Per-frame personal-choice split for the email's chart. Filter to known
   // frames so a stale value can't sneak into the rendered email.
