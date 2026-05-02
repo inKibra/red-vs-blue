@@ -145,6 +145,7 @@ export const onRequest = async (ctx: RouteContext): Promise<Response> => {
           kind: "preliminary",
           props: {
             totalResponses,
+            analyzedCount,
             personalChoiceThresholdPct,
             dependentRecommendationThresholdPct,
             averageConfidence,

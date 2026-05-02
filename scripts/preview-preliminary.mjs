@@ -17,7 +17,8 @@ import PreliminaryEmail from "../functions/_lib/templates/PreliminaryEmail.tsx";
 // endpoint computes at send time, so the preview renders the same numbers
 // recipients will see right now.
 const props = {
-  totalResponses: 223,
+  totalResponses: 315,   // total rows in `responses` (including in-progress)
+  analyzedCount: 285,    // submitted-only — the analysis denominator
   personalChoiceThresholdPct: 50.7,
   dependentRecommendationThresholdPct: 44.4,
   averageConfidence: 4.23,

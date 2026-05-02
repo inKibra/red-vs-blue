@@ -24,7 +24,14 @@ export type FrameSwingRow = {
 };
 
 export type PreliminaryEmailProps = {
+  /** Top-line headline number — every row in the responses table including
+      starts that didn’t finish. Used in the subject + lead so the email
+      reads as 'N people answered' against the broadest definition of N. */
   totalResponses: number;
+  /** Submitted-only count — the actual denominator for the percentages and
+      the chart. Surfaced as a small clarifier so the reader can square the
+      headline N with what the analysis is computed on. */
+  analyzedCount: number;
   personalChoiceThresholdPct: number;
   dependentRecommendationThresholdPct: number;
   averageConfidence: number;
@@ -69,6 +76,7 @@ const monoStack = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
 
 export default function PreliminaryEmail({
   totalResponses,
+  analyzedCount,
   personalChoiceThresholdPct,
   dependentRecommendationThresholdPct,
   frameSwing,
@@ -325,6 +333,21 @@ export default function PreliminaryEmail({
                 button when the prompt was framed that way. Same threshold
                 rule, same labels, same outcomes — only the framing sentence
                 changes.
+              </Text>
+              <Text
+                style={{
+                  margin: "6px 0 0",
+                  color: palette.muted,
+                  fontFamily: monoStack,
+                  fontSize: 10,
+                  letterSpacing: "0.06em",
+                  fontStyle: "italic",
+                }}
+              >
+                Analysis: {analyzedCount.toLocaleString()} fully-submitted responses
+                {totalResponses > analyzedCount ?
+                  ` · ${(totalResponses - analyzedCount).toLocaleString()} more started but didn’t finish` :
+                  ""}.
               </Text>
             </Section>
 
